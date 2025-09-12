@@ -30,5 +30,3 @@ logs/
 *_test.go
 test/
 
-# Local development
-.env.local
