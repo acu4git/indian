@@ -54,6 +54,15 @@ KAKIGORI_PORT="8080"
 KAKIGORI_STORE_MAX_REQUESTS="10"
 ```
 
+または、以下のようにシェル環境にて export してください。
+
+```bash
+export KAKIGORI_STORE_IDS="store-001,store-002"
+export KAKIGORI_MAX_ORDERS="100"
+export KAKIGORI_PORT="8080"
+export KAKIGORI_STORE_MAX_REQUESTS="10"
+```
+
 ### ローカル起動
 
 ```bash
