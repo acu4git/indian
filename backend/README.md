@@ -117,7 +117,9 @@ go test ./...
 │   ├── repository/               # メモリDB（menu, order, store）
 │   └── usecase/                  # ユースケース（menu, order）
 ├── tests/                        # 統合テスト
+├── docker-compose.yml
 ├── Dockerfile
+├── (.env)						  # 各自作成
 ├── fly.toml
 ├── go.mod / go.sum
 ├── Makefile
