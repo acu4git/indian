@@ -27,10 +27,7 @@ func main() {
 	errorLogger := log.New(os.Stderr, "", log.LstdFlags)
 	logger := middleware.NewLogger(infoLogger, errorLogger)
 
-	if err := godotenv.Load(); err != nil {
-		logger.LogError("Failed to load environment.")
-		os.Exit(1)
-	}
+	godotenv.Load()
 
 	// fly.io対応: PORT優先、なければKAKIGORI_PORT、なければ8080
 	port := os.Getenv("PORT")
