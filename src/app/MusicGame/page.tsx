@@ -17,47 +17,35 @@ export default function MusicGamePage() {
   const [comboCount, setComboCount] = useState(0);
   const [maxComboCount, setMaxComboCount] = useState(0);
   const [judgeResult, setJudgeResult] = useState('');
-  const [bestCount, setBestCount] = useState(0);
-  const [goodCount, setGoodCount] = useState(0);
-  const [missCount, setMissCount] = useState(0);
-  const [poorCount, setPoorCount] = useState(0);
   const [showCombo, setShowCombo] = useState(true);
   const [showJudge, setShowJudge] = useState(true);
   const [showFinalResult, setShowFinalResult] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [adY, setAdY] = useState(-C.AD_HEIGHT);
 
-  // 判定処理
-  const onBest = useCallback(() => {
-    setJudgeResult(C.JUDGE_RESULTS.BEST);
-    setBestCount(prev => prev + 1);
-    setComboCount(prev => {
-      const newCombo = prev + 1;
-      setMaxComboCount(current => Math.max(current, newCombo));
-      return newCombo;
-    });
-  }, []);
+  // 判定結果のカウント（動的に生成）
+  const [judgeCounts, setJudgeCounts] = useState<Record<string, number>>(() =>
+    Object.keys(C.JUDGE_TYPES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
+  );
 
-  const onGood = useCallback(() => {
-    setJudgeResult(C.JUDGE_RESULTS.GOOD);
-    setGoodCount(prev => prev + 1);
-    setComboCount(prev => {
-      const newCombo = prev + 1;
-      setMaxComboCount(current => Math.max(current, newCombo));
-      return newCombo;
-    });
-  }, []);
-
-  const onMiss = useCallback(() => {
-    setJudgeResult(C.JUDGE_RESULTS.MISS);
-    setMissCount(prev => prev + 1);
-    setComboCount(0);
-  }, []);
-
-  const onPoor = useCallback(() => {
-    setJudgeResult(C.JUDGE_RESULTS.POOR);
-    setPoorCount(prev => prev + 1);
-    setComboCount(0);
+  // 判定処理（汎用化）
+  const onJudge = useCallback((judgeType: keyof typeof C.JUDGE_TYPES) => {
+    const judge = C.JUDGE_TYPES[judgeType];
+    
+    setJudgeResult(judge.name);
+    setJudgeCounts(prev => ({ ...prev, [judgeType]: prev[judgeType] + 1 }));
+    
+    if (judge.combo) {
+      // コンボ継続
+      setComboCount(prev => {
+        const newCombo = prev + 1;
+        setMaxComboCount(current => Math.max(current, newCombo));
+        return newCombo;
+      });
+    } else {
+      // コンボリセット
+      setComboCount(0);
+    }
   }, []);
 
   // 入力処理
@@ -68,23 +56,27 @@ export default function MusicGamePage() {
     touchFeedbackRef.current[index] = true;
     setTimeout(() => { touchFeedbackRef.current[index] = false; }, 150);
 
-    const { BEST_Y_MIN, BEST_Y_MAX, GOOD_Y_MIN, GOOD_Y_MAX, MISS_Y_MIN, MISS_Y_MAX } = C.getJudgeYBounds(speed);
+    // 最も範囲の広い判定（通常はMISS）を取得
+    const maxRange = Math.max(...Object.values(C.JUDGE_TYPES).map(j => j.range === Infinity ? 25 : j.range));
+    const bounds = C.getJudgeYBounds(speed);
+    const maxBound = bounds[Object.keys(bounds).find(key => C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].range === maxRange) || 'MISS'];
 
     const hitBlock = blocksRef.current.find(
       (block) =>
         !block.isHit &&
         block.x === C.LANE_LEFTS[index] &&
-        block.y >= MISS_Y_MIN &&
-        block.y <= MISS_Y_MAX
+        block.y >= maxBound.min &&
+        block.y <= maxBound.max
     );
 
     if (hitBlock) {
       hitBlock.isHit = true;
-      if (hitBlock.y >= BEST_Y_MIN && hitBlock.y <= BEST_Y_MAX) onBest();
-      else if (hitBlock.y >= GOOD_Y_MIN && hitBlock.y <= GOOD_Y_MAX) onGood();
-      else onMiss();
+      const judgeType = C.getJudgeResult(hitBlock.y, speed);
+      if (judgeType) {
+        onJudge(judgeType);
+      }
     }
-  }, [isPlaying, speed, onBest, onGood, onMiss]);
+  }, [isPlaying, speed, onJudge]);
 
   // キャンバス描画
   const clearCanvas = useCallback((ctx: CanvasRenderingContext2D) => {
@@ -107,11 +99,13 @@ export default function MusicGamePage() {
   }, []);
 
   const drawBlocks = useCallback((ctx: CanvasRenderingContext2D) => {
-    const { MISS_Y_MAX } = C.getJudgeYBounds(speed);
+    // POORの範囲を取得（画面外判定）
+    const poorBound = C.getJudgeYBounds(speed)['POOR'];
+    
     blocksRef.current.forEach((block) => {
-      if (!block.isHit && !block.isPoor && block.y > MISS_Y_MAX) {
+      if (!block.isHit && !block.isPoor && block.y > poorBound.max) {
         block.isPoor = true;
-        onPoor();
+        onJudge('POOR');
       }
       block.y += speed;
       if (block.y > -C.BLOCK_HEIGHT && block.y < C.CANVAS_HEIGHT + C.BLOCK_HEIGHT && !block.isHit && !block.isPoor) {
@@ -119,7 +113,7 @@ export default function MusicGamePage() {
         ctx.fillRect(block.x, block.y - C.BLOCK_HEIGHT / 2, block.width, block.height);
       }
     });
-  }, [onPoor, speed]);
+  }, [onJudge, speed]);
   
   // ゲームループ
   const gameLoop = useCallback(() => {
@@ -138,7 +132,7 @@ export default function MusicGamePage() {
   // ゲーム開始
   const gameStart = useCallback(() => {
     blocksRef.current = [];
-    setBestCount(0); setGoodCount(0); setMissCount(0); setPoorCount(0);
+    setJudgeCounts(Object.keys(C.JUDGE_TYPES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}));
     setComboCount(0); setMaxComboCount(0); setJudgeResult('');
     setShowFinalResult(false); setGameStarted(true); setIsPlaying(true);
     
@@ -243,12 +237,10 @@ export default function MusicGamePage() {
     }
   }, [clearCanvas, drawLanes]);
 
-  const finalResultText = `
-    BEST: ${bestCount}
-    GOOD: ${goodCount}
-    MISS: ${missCount}
-    POOR: ${poorCount}
-    MAXCOMBO: ${maxComboCount}`;
+  // 結果テキストを動的生成
+  const finalResultText = Object.entries(judgeCounts)
+    .map(([key, count]) => `${C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].name}: ${count}`)
+    .join('\n    ') + `\n    MAXCOMBO: ${maxComboCount}`;
   
   const adOpacity = Math.min(1, Math.max(0, (adY + C.AD_HEIGHT) * 1.7 / C.CANVAS_HEIGHT));
 

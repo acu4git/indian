@@ -26,6 +26,79 @@ export const BUTTONS_HEIGHT = CANVAS_HEIGHT * 0.16 - BLOCK_HEIGHT / 2;
 export const BUTTONS_TOP = CANVAS_HEIGHT - BUTTONS_HEIGHT;
 
 // --------------------------------
+// 判定システム (判定追加・変更はここで行う)
+// --------------------------------
+export const JUDGE_TYPES = {
+  BEST: {
+    name: 'BEST',
+    range: 8,        // speed * 8
+    combo: true,     // コンボが継続するか
+    order: 1         // 判定の優先順位（小さいほど優先）
+  },
+  GOOD: {
+    name: 'GOOD',
+    range: 15,       // speed * 15
+    combo: true,
+    order: 2
+  },
+  MISS: {
+    name: 'MISS',
+    range: 25,       // speed * 25
+    combo: false,    // コンボがリセットされる
+    order: 3
+  },
+  POOR: {
+    name: 'POOR',
+    range: Infinity, // 画面外に出た時の判定
+    combo: false,
+    order: 4
+  }
+} as const;
+
+// 判定タイプの配列（順序保証）
+export const JUDGE_ORDER = Object.values(JUDGE_TYPES).sort((a, b) => a.order - b.order);
+
+// 判定結果の文字列（後方互換性のため）
+export const JUDGE_RESULTS = Object.fromEntries(
+  Object.entries(JUDGE_TYPES).map(([key, value]) => [key, value.name])
+);
+
+// 判定範囲を計算する関数
+export const getJudgeYBounds = (speed: number) => {
+  const bounds: Record<string, { min: number; max: number }> = {};
+  
+  Object.entries(JUDGE_TYPES).forEach(([key, judge]) => {
+    if (judge.range === Infinity) {
+      bounds[key] = { min: -Infinity, max: Infinity };
+    } else {
+      bounds[key] = {
+        min: BUTTONS_TOP - speed * judge.range,
+        max: BUTTONS_TOP + speed * judge.range
+      };
+    }
+  });
+  
+  return bounds;
+};
+
+// 判定を実行する関数
+export const getJudgeResult = (blockY: number, speed: number): keyof typeof JUDGE_TYPES | null => {
+  const bounds = getJudgeYBounds(speed);
+  
+  // 優先順位順に判定をチェック
+  for (const judge of JUDGE_ORDER) {
+    const key = Object.keys(JUDGE_TYPES).find(k => JUDGE_TYPES[k as keyof typeof JUDGE_TYPES] === judge) as keyof typeof JUDGE_TYPES;
+    const bound = bounds[key];
+    
+    if (blockY >= bound.min && blockY <= bound.max) {
+      return key;
+    }
+  }
+  
+  return null;
+};
+
+// --------------------------------
 // 広告機能関連
 // --------------------------------
 export const AD_WIDTH = 700;
@@ -43,28 +116,3 @@ export const KEY_MAPPINGS: { [key: string]: number } = {
   KeyJ: 2,
   KeyK: 3,
 };
-
-// 判定結果の文字列
-export const JUDGE_RESULTS = {
-  BEST: 'BEST',
-  GOOD: 'GOOD',
-  MISS: 'MISS',
-  POOR: 'POOR',
-};
-
-// 判定範囲の倍率 (速度に応じて変動)
-export const JUDGE_RANGE_MULTIPLIERS = {
-  BEST: 8,   // speed * 8
-  GOOD: 15,  // speed * 15
-  MISS: 25,  // speed * 25
-};
-
-// 判定範囲を計算する関数
-export const getJudgeYBounds = (speed: number) => ({
-  BEST_Y_MIN: BUTTONS_TOP - speed * JUDGE_RANGE_MULTIPLIERS.BEST,
-  BEST_Y_MAX: BUTTONS_TOP + speed * JUDGE_RANGE_MULTIPLIERS.BEST,
-  GOOD_Y_MIN: BUTTONS_TOP - speed * JUDGE_RANGE_MULTIPLIERS.GOOD,
-  GOOD_Y_MAX: BUTTONS_TOP + speed * JUDGE_RANGE_MULTIPLIERS.GOOD,
-  MISS_Y_MIN: BUTTONS_TOP - speed * JUDGE_RANGE_MULTIPLIERS.MISS,
-  MISS_Y_MAX: BUTTONS_TOP + speed * JUDGE_RANGE_MULTIPLIERS.MISS,
-});
