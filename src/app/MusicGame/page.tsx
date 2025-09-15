@@ -13,12 +13,9 @@ export default function MusicGamePage() {
 
   // ゲーム状態（UIに反映が必要なもの）
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(7);
   const [comboCount, setComboCount] = useState(0);
   const [maxComboCount, setMaxComboCount] = useState(0);
   const [judgeResult, setJudgeResult] = useState('');
-  const [showCombo, setShowCombo] = useState(true);
-  const [showJudge, setShowJudge] = useState(true);
   const [showFinalResult, setShowFinalResult] = useState(false);
   const [adY, setAdY] = useState(-C.AD_HEIGHT);
 
@@ -57,7 +54,7 @@ export default function MusicGamePage() {
 
     // 最も範囲の広い判定（通常はMISS）を取得
     const maxRange = Math.max(...Object.values(C.JUDGE_TYPES).map(j => j.range === Infinity ? 25 : j.range));
-    const bounds = C.getJudgeYBounds(speed);
+    const bounds = C.getJudgeYBounds(C.DEFAULT_SPEED);
     const maxBound = bounds[Object.keys(bounds).find(key => C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].range === maxRange) || 'MISS'];
 
     const hitBlock = blocksRef.current.find(
@@ -70,12 +67,12 @@ export default function MusicGamePage() {
 
     if (hitBlock) {
       hitBlock.isHit = true;
-      const judgeType = C.getJudgeResult(hitBlock.y, speed);
+      const judgeType = C.getJudgeResult(hitBlock.y, C.DEFAULT_SPEED);
       if (judgeType) {
         onJudge(judgeType);
       }
     }
-  }, [isPlaying, speed, onJudge]);
+  }, [isPlaying, C.DEFAULT_SPEED, onJudge]);
 
   // キャンバス描画
   const clearCanvas = useCallback((ctx: CanvasRenderingContext2D) => {
@@ -99,20 +96,20 @@ export default function MusicGamePage() {
 
   const drawBlocks = useCallback((ctx: CanvasRenderingContext2D) => {
     // POORの範囲を取得（画面外判定）
-    const poorBound = C.getJudgeYBounds(speed)['POOR'];
+    const poorBound = C.getJudgeYBounds(C.DEFAULT_SPEED)['POOR'];
     
     blocksRef.current.forEach((block) => {
       if (!block.isHit && !block.isPoor && block.y > poorBound.max) {
         block.isPoor = true;
         onJudge('POOR');
       }
-      block.y += speed;
+      block.y += C.DEFAULT_SPEED;
       if (block.y > -C.BLOCK_HEIGHT && block.y < C.CANVAS_HEIGHT + C.BLOCK_HEIGHT && !block.isHit && !block.isPoor) {
         ctx.fillStyle = '#fff';
         ctx.fillRect(block.x, block.y - C.BLOCK_HEIGHT / 2, block.width, block.height);
       }
     });
-  }, [onJudge, speed]);
+  }, [onJudge, C.DEFAULT_SPEED]);
   
   // ゲームループ
   const gameLoop = useCallback(() => {
@@ -145,7 +142,7 @@ export default function MusicGamePage() {
       const laneNum = Math.floor(Math.random() * 4);
       blocksRef.current.push({
         laneNumber: laneNum, noteID: i, x: C.LANE_LEFTS[laneNum],
-        y: -(baseSpeed * speed * i) - C.NOTE_OFFSET_TIME_MS + C.BUTTONS_TOP,
+        y: -(baseSpeed * C.DEFAULT_SPEED * i) - C.NOTE_OFFSET_TIME_MS + C.BUTTONS_TOP,
         width: C.LANE_WIDTH, height: C.BLOCK_HEIGHT, isHit: false, isPoor: false,
       });
     }
@@ -158,7 +155,7 @@ export default function MusicGamePage() {
       gameLoopRef.current = null;
       setShowFinalResult(true);
     }, 1000 * C.PLAY_TIME_SECONDS + 2000);
-  }, [speed, gameLoop]);
+  }, [C.DEFAULT_SPEED, gameLoop]);
   
   // --- useEffect フック ---
 
@@ -260,13 +257,13 @@ export default function MusicGamePage() {
           </div>
         )}
 
-        {isPlaying && showCombo && (
+        {isPlaying && (
           <div className="absolute text-4xl font-mono font-bold text-white" style={{ left: `${C.DEFAULT_LEFT + C.LANE_WIDTH}px`, top: `${C.CANVAS_HEIGHT / 2}px`, transform: 'translateY(-50%)' }}>
             COMBO<br/>{String(comboCount).padStart(4, '0')}
           </div>
         )}
 
-        {isPlaying && showJudge && judgeResult && (
+        {isPlaying &&  (
           <div className="absolute text-3xl font-mono font-bold text-yellow-400" style={{ left: `${C.DEFAULT_LEFT + C.LANE_WIDTH * 1.5}px`, top: `${C.BUTTONS_TOP - 60}px` }}>
             {judgeResult}
           </div>
