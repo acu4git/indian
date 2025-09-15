@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 // 定数をまとめてインポート
 import * as C from './consts';
 import { CurryAd } from './components/curryAd';
+import { Result } from './components/result';
 
 export default function MusicGamePage() {
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
@@ -281,18 +282,7 @@ export default function MusicGamePage() {
         )}
 
         {showFinalResult && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90">
-            <div className="text-center space-y-6">
-              <div className="text-4xl font-bold mb-8">RESULT</div>
-              <div className="text-xl font-mono whitespace-pre-line">    {finalResultText}</div>
-              <button
-                onClick={gameStart} // PLAY AGAIN ボタンで直接 gameStart を呼び出す
-                className="px-8 py-3 border-2 border-white bg-transparent text-white hover:bg-white hover:text-black transition-colors"
-              >
-                PLAY AGAIN
-              </button>
-            </div>
-          </div>
+            <Result finalResult={finalResultText} onPlayAgain={gameStart} />
         )}
       </div>
     </div>
