@@ -259,19 +259,12 @@ export default function MusicGamePage() {
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80">
             <div className="text-center space-y-6">
               <h1 className="text-4xl font-bold mb-8">MUSIC GAME</h1>
-              <div className="space-y-2">
-                <label className="flex items-center justify-center space-x-2">
-                  <input type="checkbox" checked={showCombo} onChange={(e) => setShowCombo(e.target.checked)} className="w-4 h-4"/>
-                  <span>コンボ表示</span>
-                </label>
-                <label className="flex items-center justify-center space-x-2">
-                  <input type="checkbox" checked={showJudge} onChange={(e) => setShowJudge(e.target.checked)} className="w-4 h-4"/>
-                  <span>判定表示</span>
-                </label>
-              </div>
-              <div className="space-y-2">
-                <label className="block">SPEED: {speed}</label>
-                <input type="range" value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="w-32" min="5" max="20"/>
+              <div className="space-y-4">
+                <div className="text-lg text-gray-300">
+                  <div>Speed: {C.DEFAULT_SPEED}</div>
+                  <div>Combo Display: {C.DEFAULT_SHOW_COMBO ? 'ON' : 'OFF'}</div>
+                  <div>Judge Display: {C.DEFAULT_SHOW_JUDGE ? 'ON' : 'OFF'}</div>
+                </div>
               </div>
               <button onClick={gameStart} className="px-8 py-3 border-2 border-white bg-transparent text-white hover:bg-white hover:text-black transition-colors text-xl">
                 START GAME
@@ -314,7 +307,7 @@ export default function MusicGamePage() {
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90">
             <div className="text-center space-y-6">
               <div className="text-4xl font-bold mb-8">RESULT</div>
-              <div className="text-xl font-mono whitespace-pre-line">{finalResultText}</div>
+              <div className="text-xl font-mono whitespace-pre-line">    {finalResultText}</div>
               <button
                 onClick={() => {
                   setShowFinalResult(false);
