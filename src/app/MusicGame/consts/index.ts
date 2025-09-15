@@ -102,14 +102,6 @@ export const getJudgeResult = (blockY: number, speed: number): keyof typeof JUDG
 };
 
 // --------------------------------
-// 広告機能関連
-// --------------------------------
-export const AD_WIDTH = 700;
-export const AD_HEIGHT = 70;
-export const AD_SPEED = 1.5;
-export const AD_IMAGE_URL = `https://placehold.co/${AD_WIDTH}x${AD_HEIGHT}/FFD700/000000?text=Curry+Ad`;
-
-// --------------------------------
 // ゲームプレイ関連
 // --------------------------------
 // キーボードマッピング

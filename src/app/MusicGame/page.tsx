@@ -20,7 +20,6 @@ export default function MusicGamePage() {
   const [maxComboCount, setMaxComboCount] = useState(0);
   const [judgeResult, setJudgeResult] = useState('');
   const [showFinalResult, setShowFinalResult] = useState(false);
-  const [adY, setAdY] = useState(-C.AD_HEIGHT);
 
   // 判定結果のカウント（動的に生成）
   const [judgeCounts, setJudgeCounts] = useState<Record<string, number>>(() =>
@@ -220,17 +219,6 @@ export default function MusicGamePage() {
     };
   }, [isPlaying, getTouchLane, onLaneHit]);
 
-  // 広告アニメーション
-  useEffect(() => {
-    let adInterval: NodeJS.Timeout | null = null;
-    if (isPlaying) {
-      adInterval = setInterval(() => {
-        setAdY(prevY => (prevY > C.CANVAS_HEIGHT ? -C.AD_HEIGHT : prevY + C.AD_SPEED));
-      }, 1000 / 60);
-    }
-    return () => { if (adInterval) clearInterval(adInterval); };
-  }, [isPlaying]);
-
   // クリーンアップ
   useEffect(() => {
     return () => { if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current); };
@@ -240,8 +228,6 @@ export default function MusicGamePage() {
   const finalResultText = Object.entries(judgeCounts)
     .map(([key, count]) => `${C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].name}: ${count}`)
     .join('\n    ') + `\n    MAXCOMBO: ${maxComboCount}`;
-  
-  const adOpacity = Math.min(1, Math.max(0, (adY + C.AD_HEIGHT) * 1.7 / C.CANVAS_HEIGHT));
 
   return (
     <div className={`min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 ${isPlaying ? 'cursor-none' : ''}`}>
@@ -256,7 +242,7 @@ export default function MusicGamePage() {
 
         {isPlaying && (
             <div>
-              <CurryAd adY={adY} adOpacity={adOpacity} />
+              <CurryAd isPlaying={isPlaying} />
               <Feedback comboCount={comboCount} judgeResult={judgeResult} />
             </div>
         )}
