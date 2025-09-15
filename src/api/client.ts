@@ -10,7 +10,7 @@ export type OrderResponse = {
 export type ApiError = { error: string; message: string };
 
 // .envがなければlocalhostを参照するようにしてある
-const API_BASE = process.env.VITE_API_BASE ?? "http://localhost:8080";
+const API_BASE = process.env.API_BASE ?? "http://localhost:8080";
 
 export async function fetchMenu(storeId: string): Promise<MenuItem[]> {
   const res = await fetch(`${API_BASE}/v1/stores/${storeId}/menu`);
