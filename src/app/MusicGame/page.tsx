@@ -358,11 +358,6 @@ export default function MusicGamePage() {
         )}
       </div>
       
-      {isPlaying && (
-        <div className="mt-4 text-xs opacity-50">
-          Blocks: {blocksRef.current.length} | Playing: {isPlaying.toString()}
-        </div>
-      )}
     </div>
   );
 }
