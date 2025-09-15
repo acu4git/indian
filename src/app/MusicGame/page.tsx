@@ -27,18 +27,6 @@ export default function MusicGamePage() {
   const [gameStarted, setGameStarted] = useState(false);
   const [adY, setAdY] = useState(-C.AD_HEIGHT);
 
-  // 判定範囲の計算
-  const getJudgeYBounds = useCallback(() => {
-    return {
-      BEST_Y_MIN: C.BUTTONS_TOP - speed * 8,
-      BEST_Y_MAX: C.BUTTONS_TOP + speed * 8,
-      GOOD_Y_MIN: C.BUTTONS_TOP - speed * 15,
-      GOOD_Y_MAX: C.BUTTONS_TOP + speed * 15,
-      MISS_Y_MIN: C.BUTTONS_TOP - speed * 25,
-      MISS_Y_MAX: C.BUTTONS_TOP + speed * 25,
-    };
-  }, [speed]);
-
   // 判定処理
   const onBest = useCallback(() => {
     setJudgeResult(C.JUDGE_RESULTS.BEST);
@@ -80,7 +68,7 @@ export default function MusicGamePage() {
     touchFeedbackRef.current[index] = true;
     setTimeout(() => { touchFeedbackRef.current[index] = false; }, 150);
 
-    const { BEST_Y_MIN, BEST_Y_MAX, GOOD_Y_MIN, GOOD_Y_MAX, MISS_Y_MIN, MISS_Y_MAX } = getJudgeYBounds();
+    const { BEST_Y_MIN, BEST_Y_MAX, GOOD_Y_MIN, GOOD_Y_MAX, MISS_Y_MIN, MISS_Y_MAX } = C.getJudgeYBounds(speed);
 
     const hitBlock = blocksRef.current.find(
       (block) =>
@@ -96,7 +84,7 @@ export default function MusicGamePage() {
       else if (hitBlock.y >= GOOD_Y_MIN && hitBlock.y <= GOOD_Y_MAX) onGood();
       else onMiss();
     }
-  }, [isPlaying, getJudgeYBounds, onBest, onGood, onMiss]);
+  }, [isPlaying, speed, onBest, onGood, onMiss]);
 
   // キャンバス描画
   const clearCanvas = useCallback((ctx: CanvasRenderingContext2D) => {
@@ -119,7 +107,7 @@ export default function MusicGamePage() {
   }, []);
 
   const drawBlocks = useCallback((ctx: CanvasRenderingContext2D) => {
-    const { MISS_Y_MAX } = getJudgeYBounds();
+    const { MISS_Y_MAX } = C.getJudgeYBounds(speed);
     blocksRef.current.forEach((block) => {
       if (!block.isHit && !block.isPoor && block.y > MISS_Y_MAX) {
         block.isPoor = true;
@@ -131,7 +119,7 @@ export default function MusicGamePage() {
         ctx.fillRect(block.x, block.y - C.BLOCK_HEIGHT / 2, block.width, block.height);
       }
     });
-  }, [getJudgeYBounds, onPoor, speed]);
+  }, [onPoor, speed]);
   
   // ゲームループ
   const gameLoop = useCallback(() => {

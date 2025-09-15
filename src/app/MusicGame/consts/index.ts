@@ -51,3 +51,20 @@ export const JUDGE_RESULTS = {
   MISS: 'MISS',
   POOR: 'POOR',
 };
+
+// 判定範囲の倍率 (速度に応じて変動)
+export const JUDGE_RANGE_MULTIPLIERS = {
+  BEST: 8,   // speed * 8
+  GOOD: 15,  // speed * 15
+  MISS: 25,  // speed * 25
+};
+
+// 判定範囲を計算する関数
+export const getJudgeYBounds = (speed: number) => ({
+  BEST_Y_MIN: BUTTONS_TOP - speed * JUDGE_RANGE_MULTIPLIERS.BEST,
+  BEST_Y_MAX: BUTTONS_TOP + speed * JUDGE_RANGE_MULTIPLIERS.BEST,
+  GOOD_Y_MIN: BUTTONS_TOP - speed * JUDGE_RANGE_MULTIPLIERS.GOOD,
+  GOOD_Y_MAX: BUTTONS_TOP + speed * JUDGE_RANGE_MULTIPLIERS.GOOD,
+  MISS_Y_MIN: BUTTONS_TOP - speed * JUDGE_RANGE_MULTIPLIERS.MISS,
+  MISS_Y_MAX: BUTTONS_TOP + speed * JUDGE_RANGE_MULTIPLIERS.MISS,
+});
