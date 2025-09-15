@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import * as C from './consts';
 import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
+import { Feedback } from './components/feedback';
 
 export default function MusicGamePage() {
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
@@ -254,19 +255,10 @@ export default function MusicGamePage() {
         />
 
         {isPlaying && (
-            <CurryAd adY={adY} adOpacity={adOpacity} />
-        )}
-
-        {isPlaying && (
-          <div className="absolute text-4xl font-mono font-bold text-white" style={{ left: `${C.DEFAULT_LEFT + C.LANE_WIDTH}px`, top: `${C.CANVAS_HEIGHT / 2}px`, transform: 'translateY(-50%)' }}>
-            COMBO<br/>{String(comboCount).padStart(4, '0')}
-          </div>
-        )}
-
-        {isPlaying &&  (
-          <div className="absolute text-3xl font-mono font-bold text-yellow-400" style={{ left: `${C.DEFAULT_LEFT + C.LANE_WIDTH * 1.5}px`, top: `${C.BUTTONS_TOP - 60}px` }}>
-            {judgeResult}
-          </div>
+            <div>
+              <CurryAd adY={adY} adOpacity={adOpacity} />
+              <Feedback comboCount={comboCount} judgeResult={judgeResult} />
+            </div>
         )}
 
         {isPlaying && (
