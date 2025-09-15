@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 // 定数をまとめてインポート
 import * as C from './consts';
+import { CurryAd } from './components/curryAd';
 
 export default function MusicGamePage() {
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
@@ -252,9 +253,7 @@ export default function MusicGamePage() {
         />
 
         {isPlaying && (
-          <div className="absolute cursor-pointer" style={{ left: `${C.DEFAULT_LEFT - 220}px`, top: `${adY}px`, opacity: adOpacity }} onClick={() => window.open(C.AD_IMAGE_URL, '_blank')}>
-            <img src={C.AD_IMAGE_URL} alt="Ad" width={C.AD_WIDTH} height={C.AD_HEIGHT} />
-          </div>
+            <CurryAd adY={adY} adOpacity={adOpacity} />
         )}
 
         {isPlaying && (
