@@ -20,7 +20,6 @@ export default function MusicGamePage() {
   const [showCombo, setShowCombo] = useState(true);
   const [showJudge, setShowJudge] = useState(true);
   const [showFinalResult, setShowFinalResult] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
   const [adY, setAdY] = useState(-C.AD_HEIGHT);
 
   // 判定結果のカウント（動的に生成）
@@ -131,10 +130,15 @@ export default function MusicGamePage() {
 
   // ゲーム開始
   const gameStart = useCallback(() => {
+    if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
+    
     blocksRef.current = [];
     setJudgeCounts(Object.keys(C.JUDGE_TYPES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}));
-    setComboCount(0); setMaxComboCount(0); setJudgeResult('');
-    setShowFinalResult(false); setGameStarted(true); setIsPlaying(true);
+    setComboCount(0);
+    setMaxComboCount(0);
+    setJudgeResult('');
+    setShowFinalResult(false);
+    setIsPlaying(true);
     
     const baseSpeed = (60 * C.PLAY_TIME_SECONDS) / C.TOTAL_NOTES;
     for (let i = 0; i < C.TOTAL_NOTES; i++) {
@@ -156,6 +160,13 @@ export default function MusicGamePage() {
     }, 1000 * C.PLAY_TIME_SECONDS + 2000);
   }, [speed, gameLoop]);
   
+  // --- useEffect フック ---
+
+  // 初回レンダリング時にゲームを自動で開始
+  useEffect(() => {
+    gameStart();
+  }, [gameStart]);
+
   // キーボードイベント
   useEffect(() => {
     const handleKeyDown = (ev: KeyboardEvent) => {
@@ -225,18 +236,6 @@ export default function MusicGamePage() {
     return () => { if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current); };
   }, []);
 
-  // 初期キャンバス描画
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        clearCanvas(ctx);
-        drawLanes(ctx);
-      }
-    }
-  }, [clearCanvas, drawLanes]);
-
   // 結果テキストを動的生成
   const finalResultText = Object.entries(judgeCounts)
     .map(([key, count]) => `${C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].name}: ${count}`)
@@ -254,24 +253,6 @@ export default function MusicGamePage() {
           className="border border-gray-600 bg-black touch-none"
           style={{ touchAction: 'none' }}
         />
-
-        {!gameStarted && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80">
-            <div className="text-center space-y-6">
-              <h1 className="text-4xl font-bold mb-8">MUSIC GAME</h1>
-              <div className="space-y-4">
-                <div className="text-lg text-gray-300">
-                  <div>Speed: {C.DEFAULT_SPEED}</div>
-                  <div>Combo Display: {C.DEFAULT_SHOW_COMBO ? 'ON' : 'OFF'}</div>
-                  <div>Judge Display: {C.DEFAULT_SHOW_JUDGE ? 'ON' : 'OFF'}</div>
-                </div>
-              </div>
-              <button onClick={gameStart} className="px-8 py-3 border-2 border-white bg-transparent text-white hover:bg-white hover:text-black transition-colors text-xl">
-                START GAME
-              </button>
-            </div>
-          </div>
-        )}
 
         {isPlaying && (
           <div className="absolute cursor-pointer" style={{ left: `${C.DEFAULT_LEFT - 220}px`, top: `${adY}px`, opacity: adOpacity }} onClick={() => window.open(C.AD_IMAGE_URL, '_blank')}>
@@ -309,19 +290,7 @@ export default function MusicGamePage() {
               <div className="text-4xl font-bold mb-8">RESULT</div>
               <div className="text-xl font-mono whitespace-pre-line">    {finalResultText}</div>
               <button
-                onClick={() => {
-                  setShowFinalResult(false);
-                  setGameStarted(false);
-                  setIsPlaying(false);
-                  const canvas = canvasRef.current;
-                  if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    if (ctx) {
-                      clearCanvas(ctx);
-                      drawLanes(ctx);
-                    }
-                  }
-                }}
+                onClick={gameStart} // PLAY AGAIN ボタンで直接 gameStart を呼び出す
                 className="px-8 py-3 border-2 border-white bg-transparent text-white hover:bg-white hover:text-black transition-colors"
               >
                 PLAY AGAIN
@@ -330,7 +299,6 @@ export default function MusicGamePage() {
           </div>
         )}
       </div>
-      
     </div>
   );
 }
