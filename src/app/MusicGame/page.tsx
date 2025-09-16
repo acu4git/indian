@@ -13,6 +13,11 @@ export default function MusicGamePage() {
   const isKeysHitRef = useRef<boolean[]>([false, false, false, false]);
   const touchFeedbackRef = useRef<boolean[]>([false, false, false, false]);
   const gameLoopRef = useRef<number | null>(null);
+  
+  // --- ▼ここから追加 ▼ ---
+  // 効果音用のAudioオブジェクトを保持するref
+  const hitSoundRef = useRef<HTMLAudioElement | null>(null);
+  // --- ▲ここまで追加 ▲ ---
 
   // ゲーム状態（UIに反映が必要なもの）
   const [isPlaying, setIsPlaying] = useState(false);
@@ -54,7 +59,6 @@ export default function MusicGamePage() {
     touchFeedbackRef.current[index] = true;
     setTimeout(() => { touchFeedbackRef.current[index] = false; }, 150);
 
-    // 最も範囲の広い判定（通常はMISS）を取得
     const maxRange = Math.max(...Object.values(C.JUDGE_TYPES).map(j => j.range === Infinity ? 25 : j.range));
     const bounds = C.getJudgeYBounds(C.DEFAULT_SPEED);
     const maxBound = bounds[Object.keys(bounds).find(key => C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].range === maxRange) || 'MISS'];
@@ -68,13 +72,21 @@ export default function MusicGamePage() {
     );
 
     if (hitBlock) {
+      // --- ▼ここから変更 ▼ ---
+      // 効果音を再生
+      if (hitSoundRef.current) {
+        hitSoundRef.current.currentTime = 0; // 再生位置を先頭に戻す
+        hitSoundRef.current.play();          // 再生
+      }
+      // --- ▲ここまで変更 ▲ ---
+
       hitBlock.isHit = true;
       const judgeType = C.getJudgeResult(hitBlock.y, C.DEFAULT_SPEED);
       if (judgeType) {
         onJudge(judgeType);
       }
     }
-  }, [isPlaying, C.DEFAULT_SPEED, onJudge]);
+  }, [isPlaying, onJudge]); // C.DEFAULT_SPEEDを依存配列から削除（定数のため）
 
   // キャンバス描画
   const clearCanvas = useCallback((ctx: CanvasRenderingContext2D) => {
@@ -111,7 +123,7 @@ export default function MusicGamePage() {
         ctx.fillRect(block.x, block.y - C.BLOCK_HEIGHT / 2, block.width, block.height);
       }
     });
-  }, [onJudge, C.DEFAULT_SPEED]);
+  }, [onJudge]); // C.DEFAULT_SPEEDを依存配列から削除（定数のため）
   
   // ゲームループ
   const gameLoop = useCallback(() => {
@@ -157,9 +169,17 @@ export default function MusicGamePage() {
       gameLoopRef.current = null;
       setShowFinalResult(true);
     }, 1000 * C.PLAY_TIME_SECONDS + 2000);
-  }, [C.DEFAULT_SPEED, gameLoop]);
+  }, [gameLoop]); // C定数を依存配列から削除
   
   // --- useEffect フック ---
+
+  // --- ▼ここから追加 ▼ ---
+  // 初回レンダリング時にAudioオブジェクトを生成
+  useEffect(() => {
+    // Next.jsやVite/CRAの場合、publicフォルダに音声ファイルを配置します
+    hitSoundRef.current = new Audio('/ghost.mp3');
+  }, []);
+  // --- ▲ここまで追加 ▲ ---
 
   // 初回レンダリング時にゲームを自動で開始
   useEffect(() => {
