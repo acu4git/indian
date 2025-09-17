@@ -271,7 +271,7 @@ export default function MusicGamePage() {
     const loadMenuAndStartGame = async () => {
       try {
         // storeIdは仮で'store-001'とします。必要に応じて変更してください。
-        const items = await fetchMenu('store-001');
+        const items = await fetchMenu(C.STORE_ID);
         
         // 取得したメニューデータに色を割り当てる
         const itemsWithColor = items.map((item, index) => ({

@@ -121,3 +121,6 @@ export const FLAVOR_COLORS = [
   '#c90', // 予備色1 (カレー系)
   '#d0d', // 予備色2 (明るい緑)
 ];
+
+// 店のID（環境変数から取得）
+export const STORE_ID = process.env.STORE_ID ?? 'store-001';
