@@ -5,10 +5,8 @@ import * as C from './consts';
 import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
-// --- ▼ 変更点 ▼ ---
 // client.tsからfetchMenuとMenuItem型をインポート
 import { fetchMenu, type MenuItem } from './../../api/client'; 
-// --- ▲ 変更点 ▲ ---
 
 /*
 かき氷の味
@@ -39,10 +37,8 @@ export default function MusicGamePage() {
   const [maxComboCount, setMaxComboCount] = useState(0);
   const [judgeResult, setJudgeResult] = useState('');
   const [showFinalResult, setShowFinalResult] = useState(false);
-  // --- ▼ 変更点 ▼ ---
   // APIから取得したメニューデータ(色情報付き)を保持するstate
   const [menuItems, setMenuItems] = useState<MenuItemWithColor[]>([]);
-  // --- ▲ 変更点 ▲ ---
 
   // 判定結果のカウント（動的に生成）
   const [judgeCounts, setJudgeCounts] = useState<Record<string, number>>(() =>
@@ -135,14 +131,12 @@ export default function MusicGamePage() {
       }
       block.y += C.DEFAULT_SPEED;
       if (block.y > -C.BLOCK_HEIGHT && block.y < C.CANVAS_HEIGHT + C.BLOCK_HEIGHT && !block.isHit && !block.isPoor) {
-        // --- ▼ 変更点 ▼ ---
         // ノーツに設定された色で描画する
         ctx.fillStyle = block.color;
-        // --- ▲ 変更点 ▲ ---
         ctx.fillRect(block.x, block.y - C.BLOCK_HEIGHT / 2, block.width, block.height);
       }
     });
-  }, [onJudge]); // C.DEFAULT_SPEEDを依存配列から削除（定数のため）
+  }, [onJudge]);
   
   // ゲームループ
   const gameLoop = useCallback(() => {
@@ -160,7 +154,6 @@ export default function MusicGamePage() {
 
   // ゲーム開始
   const gameStart = useCallback(() => {
-    // --- ▼ 変更点 ▼ ---
     // メニューデータが読み込まれていない場合は、ゲームを開始しない
     if (menuItems.length === 0) {
       console.warn("メニューデータがまだ読み込めていません。");
@@ -169,7 +162,6 @@ export default function MusicGamePage() {
     else{
       console.log("メニューデータを取得しました。ゲームを開始します。", menuItems);
     }
-    // --- ▲ 変更点 ▲ ---
 
     if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
     
@@ -182,23 +174,52 @@ export default function MusicGamePage() {
     setIsPlaying(true);
     
     const baseSpeed = (60 * C.PLAY_TIME_SECONDS) / C.TOTAL_NOTES;
+
+    // --- ▼ 変更点：味ごとのノーツを1つだけ、ランダムな位置に配置するロジック ▼ ---
+    const totalNotes = C.TOTAL_NOTES;
+    // 特殊な色付きノーツの数（メニューの数と総ノーツ数の少ない方）
+    const numFlavorNotes = Math.min(menuItems.length, totalNotes); 
+
+    // 1. 全ノーツのインデックスを生成し、シャッフル
+    const allNoteIndices = Array.from({ length: totalNotes }, (_, i) => i);
+    for (let i = allNoteIndices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allNoteIndices[i], allNoteIndices[j]] = [allNoteIndices[j], allNoteIndices[i]];
+    }
+    // 特殊な色付きノーツを配置するインデックスを選択
+    const flavorNoteIndices = allNoteIndices.slice(0, numFlavorNotes);
+
+    // 2. menuItemsをシャッフル（色情報が既に含まれているため、これでランダムに色と味が割り当てられる）
+    const shuffledMenuItems = [...menuItems];
+    for (let i = shuffledMenuItems.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledMenuItems[i], shuffledMenuItems[j]] = [shuffledMenuItems[j], shuffledMenuItems[i]];
+    }
+
+    // ノーツインデックスと割り当てるMenuItemのマップを作成
+    const noteIndexToMenuItemMap = new Map<number, MenuItemWithColor>();
+    flavorNoteIndices.forEach((index, i) => {
+        if (i < shuffledMenuItems.length) {
+            noteIndexToMenuItemMap.set(index, shuffledMenuItems[i]);
+        }
+    });
+    // --- ▲ 変更点 ▲ ---
+    
     for (let i = 0; i < C.TOTAL_NOTES; i++) {
       const laneNum = Math.floor(Math.random() * 4);
       
-      // --- ▼ 変更点 ▼ ---
-      // ランダムではなく、ノーツのインデックスを使って順番に味を選択
-      // (例: 4つの味があれば、0, 1, 2, 3, 0, 1, 2, 3, ... の順になる)
-      const menuItem = menuItems[i % menuItems.length];
+      // --- ▼ 変更点：ランダムに選ばれたノーツにのみ味に対応する色を割り当て、それ以外は白色 ▼ ---
+      const assignedMenuItem = noteIndexToMenuItemMap.get(i);
+      const noteColor = assignedMenuItem ? assignedMenuItem.color : '#FFFFFF'; // デフォルトは白色
+      const noteMenuId = assignedMenuItem ? assignedMenuItem.id : undefined; // 味のIDをノーツに紐付け
       // --- ▲ 変更点 ▲ ---
       
       blocksRef.current.push({
         laneNumber: laneNum, noteID: i, x: C.LANE_LEFTS[laneNum],
         y: -(baseSpeed * C.DEFAULT_SPEED * i) - C.NOTE_OFFSET_TIME_MS + C.BUTTONS_TOP,
         width: C.LANE_WIDTH, height: C.BLOCK_HEIGHT, isHit: false, isPoor: false,
-        menuId: menuItem.id, // ノーツにメニューIDを紐付け
-        // --- ▼ 変更点 ▼ ---
-        color: menuItem.color, // ノーツに色を紐付け, ただ今黒いだけ
-        // --- ▲ 変更点 ▲ ---
+        menuId: noteMenuId, // ノーツにメニューIDを紐付け
+        color: noteColor, // ノーツに色を紐付け
       });
     }
 
@@ -214,14 +235,12 @@ export default function MusicGamePage() {
   
   // --- useEffect フック ---
 
-  // --- ▼ここから追加 ▼ ---
   // 初回レンダリング時にAudioオブジェクトを生成
   useEffect(() => {
     // Next.jsやVite/CRAの場合、publicフォルダに音声ファイルを配置します
     hitSoundRef.current = new Audio('/ghost.mp3');
   }, []);
 
-  // --- ▼ 変更点 ▼ ---
   // 初回レンダリング時にメニューを取得し、取得後にゲームを開始する
   useEffect(() => {
     const loadMenuAndStartGame = async () => {
@@ -229,7 +248,6 @@ export default function MusicGamePage() {
         // storeIdは仮で'store-001'とします。必要に応じて変更してください。
         const items = await fetchMenu('store-001');
         
-        // --- ▼ 変更点 ▼ ---
         // 取得したメニューデータに色を割り当てる
         const itemsWithColor = items.map((item, index) => ({
           ...item,
@@ -237,7 +255,6 @@ export default function MusicGamePage() {
           color: C.FLAVOR_COLORS[index % C.FLAVOR_COLORS.length],
         }));
         setMenuItems(itemsWithColor);
-        // --- ▲ 変更点 ▲ ---
         
       } catch (error) {
         console.error("メニューの取得に失敗しました:", error);
@@ -245,13 +262,12 @@ export default function MusicGamePage() {
       }
     };
     loadMenuAndStartGame();
-  }, []); // このuseEffectは初回のみ実行
+  }, []); 
 
   // メニューデータがセットされたらゲームを開始
   useEffect(() => {
       gameStart();
   }, [menuItems, gameStart]);
-  // --- ▲ 変更点 ▲ ---
 
 
   // キーボードイベント
