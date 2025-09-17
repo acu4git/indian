@@ -111,12 +111,16 @@ export default function MusicGamePage() {
         }
         // プレイ状態を終了に
         setIsPlaying(false);
+        const orderedMenuItem = menuItems.find(item => item.id === hitBlock.menuId);
+        // クエリパラメータの値をURLエンコードする
+        const nameParam = orderedMenuItem?.name ? encodeURIComponent(orderedMenuItem.name) : '';
+        const descriptionParam = orderedMenuItem?.description ? encodeURIComponent(orderedMenuItem.description) : '';
         // 詳細ページへ遷移
-        router.push(`/menu/${hitBlock.menuId}`);
+        router.push(`/menu/${hitBlock.menuId}?name=${nameParam}&description=${descriptionParam}`);
       }
       // --- ▲ 変更・追加 ▲ ---
     }
-  }, [isPlaying, onJudge, router]); // ← 変更: 依存配列にrouterを追加
+  }, [isPlaying, onJudge, router, menuItems]); // ← 変更: 依存配列にrouterを追加
 
   // キャンバス描画
   const clearCanvas = useCallback((ctx: CanvasRenderingContext2D) => {
