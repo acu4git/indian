@@ -8,4 +8,5 @@ interface Block {
   isHit: boolean;
   isPoor: boolean;
   menuId: string; // 紐付けるメニューのID
+  color: string; // ノーツの色
 }

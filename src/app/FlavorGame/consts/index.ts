@@ -111,3 +111,13 @@ export const KEY_MAPPINGS: { [key: string]: number } = {
   KeyJ: 2,
   KeyK: 3,
 };
+
+// 味に対応する色の配列を定義
+export const FLAVOR_COLORS = [
+  '#FF6B6B', // いちご (赤系)
+  '#4ECDC4', // メロン (緑系)
+  '#45B7D1', // ブルーハワイ (青系)
+  '#FED766', // オレンジ (黄系)
+  '#F0B3D5', // 予備色1 (ピンク系)
+  '#77DD77', // 予備色2 (明るい緑)
+];
