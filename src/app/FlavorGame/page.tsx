@@ -159,6 +159,9 @@ export default function MusicGamePage() {
       console.warn("メニューデータがまだ読み込めていません。");
       return;
     }
+    else{
+      console.log("メニューデータを取得しました。ゲームを開始します。", menuItems);
+    }
     // --- ▲ 変更点 ▲ ---
 
     if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
@@ -197,7 +200,7 @@ export default function MusicGamePage() {
       gameLoopRef.current = null;
       setShowFinalResult(true);
     }, 1000 * C.PLAY_TIME_SECONDS + 2000);
-  }, [gameLoop]); // C定数を依存配列から削除
+  }, [gameLoop, menuItems]); // C定数を依存配列から削除
   
   // --- useEffect フック ---
 
