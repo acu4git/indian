@@ -1,12 +1,13 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation'; // ← 追加: useRouterをインポート
 // 定数をまとめてインポート
 import * as C from './consts';
 import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
 // client.tsからfetchMenuとMenuItem型をインポート
-import { fetchMenu, type MenuItem } from './../../api/client'; 
+import { fetchMenu, type MenuItem } from './../../api/client';
 
 /*
 かき氷の味
@@ -21,6 +22,9 @@ type MenuItemWithColor = MenuItem & { color: string };
 
 
 export default function MusicGamePage() {
+  // ← 追加: useRouterフックを呼び出し
+  const router = useRouter(); 
+  
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const blocksRef = useRef<Block[]>([]);
@@ -97,8 +101,22 @@ export default function MusicGamePage() {
       if (judgeType) {
         onJudge(judgeType);
       }
+
+      // --- ▼ 変更・追加: 色付きノーツ押下時のページ遷移処理 ▼ ---
+      if (hitBlock.menuId) {
+        // ゲームループを停止
+        if (gameLoopRef.current) {
+          cancelAnimationFrame(gameLoopRef.current);
+          gameLoopRef.current = null;
+        }
+        // プレイ状態を終了に
+        setIsPlaying(false);
+        // 詳細ページへ遷移
+        router.push(`/menu/${hitBlock.menuId}`);
+      }
+      // --- ▲ 変更・追加 ▲ ---
     }
-  }, [isPlaying, onJudge]); // C.DEFAULT_SPEEDを依存配列から削除（定数のため）
+  }, [isPlaying, onJudge, router]); // ← 変更: 依存配列にrouterを追加
 
   // キャンバス描画
   const clearCanvas = useCallback((ctx: CanvasRenderingContext2D) => {
@@ -226,6 +244,9 @@ export default function MusicGamePage() {
     gameLoopRef.current = requestAnimationFrame(gameLoop);
 
     setTimeout(() => {
+      // ページ遷移などで既にゲームが停止している場合は何もしない
+      if (!gameLoopRef.current) return;
+
       setIsPlaying(false);
       if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
       gameLoopRef.current = null;
