@@ -7,4 +7,5 @@ interface Block {
   height: number;
   isHit: boolean;
   isPoor: boolean;
+  menuId: string; // 紐付けるメニューのID
 }
