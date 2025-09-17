@@ -10,10 +10,10 @@ export type OrderResponse = {
 export type ApiError = { error: string; message: string };
 
 // .envがなければlocalhostを参照するようにしてある
-const API_BASE = process.env.API_BASE ?? "http://localhost:8080";
+const NEXT_PUBLIC_API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8080";
 
 export async function fetchMenu(storeId: string): Promise<MenuItem[]> {
-  const res = await fetch(`${API_BASE}/v1/stores/${storeId}/menu`);
+  const res = await fetch(`${NEXT_PUBLIC_API_BASE}/v1/stores/${storeId}/menu`);
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiError | null;
     throw new Error(data?.message || `Menu fetch failed (${res.status})`);
@@ -26,7 +26,7 @@ export async function createOrder(
   storeId: string,
   menuId: string
 ): Promise<OrderResponse> {
-  const res = await fetch(`${API_BASE}/v1/stores/${storeId}/orders`, {
+  const res = await fetch(`${NEXT_PUBLIC_API_BASE}/v1/stores/${storeId}/orders`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ menu_item_id: menuId }),
@@ -42,7 +42,7 @@ export async function fetchOrderById(
   storeId: string,
   orderId: string
 ): Promise<OrderResponse> {
-  const res = await fetch(`${API_BASE}/v1/stores/${storeId}/orders/${orderId}`);
+  const res = await fetch(`${NEXT_PUBLIC_API_BASE}/v1/stores/${storeId}/orders/${orderId}`);
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiError | null;
     throw new Error(data?.message || `Order fetch failed (${res.status})`);
