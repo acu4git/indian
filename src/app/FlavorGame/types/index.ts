@@ -7,6 +7,6 @@ interface Block {
   height: number;
   isHit: boolean;
   isPoor: boolean;
-  menuId: string; // 紐付けるメニューのID
+  menuId: string | undefined; // 紐付けるメニューのID
   color: string; // ノーツの色
 }
