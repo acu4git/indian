@@ -197,7 +197,7 @@ export default function MusicGamePage() {
         width: C.LANE_WIDTH, height: C.BLOCK_HEIGHT, isHit: false, isPoor: false,
         menuId: menuItem.id, // ノーツにメニューIDを紐付け
         // --- ▼ 変更点 ▼ ---
-        color: "#fff" // menuItem.color, // ノーツに色を紐付け, ただ今黒いだけ
+        color: menuItem.color, // ノーツに色を紐付け, ただ今黒いだけ
         // --- ▲ 変更点 ▲ ---
       });
     }
