@@ -5,6 +5,10 @@ import * as C from './consts';
 import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
+// --- ▼ 変更点 ▼ ---
+// client.tsからfetchMenuとMenuItem型をインポート
+import { fetchMenu, type MenuItem } from './../../api/client'; 
+// --- ▲ 変更点 ▲ ---
 
 /*
 かき氷の味
@@ -31,6 +35,10 @@ export default function MusicGamePage() {
   const [maxComboCount, setMaxComboCount] = useState(0);
   const [judgeResult, setJudgeResult] = useState('');
   const [showFinalResult, setShowFinalResult] = useState(false);
+  // --- ▼ 変更点 ▼ ---
+  // APIから取得したメニューデータを保持するstate
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  // --- ▲ 変更点 ▲ ---
 
   // 判定結果のカウント（動的に生成）
   const [judgeCounts, setJudgeCounts] = useState<Record<string, number>>(() =>
@@ -145,6 +153,14 @@ export default function MusicGamePage() {
 
   // ゲーム開始
   const gameStart = useCallback(() => {
+    // --- ▼ 変更点 ▼ ---
+    // メニューデータが読み込まれていない場合は、ゲームを開始しない
+    if (menuItems.length === 0) {
+      console.warn("メニューデータがまだ読み込めていません。");
+      return;
+    }
+    // --- ▲ 変更点 ▲ ---
+
     if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
     
     blocksRef.current = [];
@@ -158,10 +174,18 @@ export default function MusicGamePage() {
     const baseSpeed = (60 * C.PLAY_TIME_SECONDS) / C.TOTAL_NOTES;
     for (let i = 0; i < C.TOTAL_NOTES; i++) {
       const laneNum = Math.floor(Math.random() * 4);
+      // --- ▼ 変更点 ▼ ---
+      // メニューアイテムをランダムに選択
+      const menuItem = menuItems[Math.floor(Math.random() * menuItems.length)];
+      // --- ▲ 変更点 ▲ ---
+      
       blocksRef.current.push({
         laneNumber: laneNum, noteID: i, x: C.LANE_LEFTS[laneNum],
         y: -(baseSpeed * C.DEFAULT_SPEED * i) - C.NOTE_OFFSET_TIME_MS + C.BUTTONS_TOP,
         width: C.LANE_WIDTH, height: C.BLOCK_HEIGHT, isHit: false, isPoor: false,
+        // --- ▼ 変更点 ▼ ---
+        menuId: menuItem.id, // ノーツにメニューIDを紐付け
+        // --- ▲ 変更点 ▲ ---
       });
     }
 
@@ -183,12 +207,29 @@ export default function MusicGamePage() {
     // Next.jsやVite/CRAの場合、publicフォルダに音声ファイルを配置します
     hitSoundRef.current = new Audio('/ghost.mp3');
   }, []);
-  // --- ▲ここまで追加 ▲ ---
 
-  // 初回レンダリング時にゲームを自動で開始
+  // --- ▼ 変更点 ▼ ---
+  // 初回レンダリング時にメニューを取得し、取得後にゲームを開始する
+  useEffect(() => {
+    const loadMenuAndStartGame = async () => {
+      try {
+        // storeIdは仮で'1'とします。必要に応じて変更してください。
+        const items = await fetchMenu('store-001');
+        setMenuItems(items);
+      } catch (error) {
+        console.error("メニューの取得に失敗しました:", error);
+        // エラーの場合、空のメニューでゲームが始まらないようにする
+      }
+    };
+    loadMenuAndStartGame();
+  }, []); // このuseEffectは初回のみ実行
+
+  // メニューデータがセットされたらゲームを開始
   useEffect(() => {
     gameStart();
-  }, [gameStart]);
+  }, [menuItems, gameStart]);
+  // --- ▲ 変更点 ▲ ---
+
 
   // キーボードイベント
   useEffect(() => {
