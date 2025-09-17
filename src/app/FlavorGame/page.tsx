@@ -6,6 +6,14 @@ import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
 
+/*
+かき氷の味
+			{ID: "giiku-sai", Name: "技育祭な いちご味", Description: "技育祭をイメージしたいちご味のかき氷"},
+			{ID: "giiku-haku", Name: "技育博な メロン味", Description: "技育博をイメージしたメロン味のかき氷"},
+			{ID: "giiku-ten", Name: "技育展な ブルーハワイ味", Description: "技育展をイメージしたブルーハワイ味のかき氷"},
+			{ID: "giiku-camp", Name: "技育CAMPな オレンジ味", Description: "技育CAMPをイメージしたオレンジ味のかき氷"},
+*/
+
 export default function MusicGamePage() {
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,10 +22,8 @@ export default function MusicGamePage() {
   const touchFeedbackRef = useRef<boolean[]>([false, false, false, false]);
   const gameLoopRef = useRef<number | null>(null);
   
-  // --- ▼ここから追加 ▼ ---
   // 効果音用のAudioオブジェクトを保持するref
   const hitSoundRef = useRef<HTMLAudioElement | null>(null);
-  // --- ▲ここまで追加 ▲ ---
 
   // ゲーム状態（UIに反映が必要なもの）
   const [isPlaying, setIsPlaying] = useState(false);
@@ -72,13 +78,11 @@ export default function MusicGamePage() {
     );
 
     if (hitBlock) {
-      // --- ▼ここから変更 ▼ ---
       // 効果音を再生
       if (hitSoundRef.current) {
         hitSoundRef.current.currentTime = 0; // 再生位置を先頭に戻す
         hitSoundRef.current.play();          // 再生
       }
-      // --- ▲ここまで変更 ▲ ---
 
       hitBlock.isHit = true;
       const judgeType = C.getJudgeResult(hitBlock.y, C.DEFAULT_SPEED);
