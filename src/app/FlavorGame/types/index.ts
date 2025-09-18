@@ -7,6 +7,6 @@ interface Block {
   height: number;
   isHit: boolean;
   isPoor: boolean;
-  menuId: string | undefined; // 紐付けるメニューのID
+  menuId?: string; // 紐付けるメニューのID, string | undefinedだけだと存在してない時にエラーになる
   color: string; // ノーツの色
 }
