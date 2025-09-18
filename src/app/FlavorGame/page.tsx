@@ -10,17 +10,8 @@ import { Feedback } from './components/feedback';
 // client.tsからfetchMenuとMenuItem型をインポート
 import { fetchMenu, type MenuItem } from './../../api/client';
 
-/*
-かき氷の味
-      {ID: "giiku-sai", Name: "技育祭な いちご味", Description: "技育祭をイメージしたいちご味のかき氷"},
-      {ID: "giiku-haku", Name: "技育博な メロン味", Description: "技育博をイメージしたメロン味のかき氷"},
-      {ID: "giiku-ten", Name: "技育展な ブルーハワイ味", Description: "技育展をイメージしたブルーハワイ味のかき氷"},
-      {ID: "giiku-camp", Name: "技育CAMPな オレンジ味", Description: "技育CAMPをイメージしたオレンジ味のかき氷"},
-*/
-
 // MenuItem型に色情報を追加した新しい型を定義
 type MenuItemWithColor = MenuItem & { color: string };
-
 
 export default function MusicGamePage() {
   // ← 追加: useRouterフックを呼び出し
@@ -103,7 +94,7 @@ export default function MusicGamePage() {
         onJudge(judgeType);
       }
 
-      // --- ▼ 変更・追加: 色付きノーツ押下時のページ遷移処理 ▼ ---
+      // 
       if (hitBlock.menuId) {
         // ゲームループを停止
         if (gameLoopRef.current) {
@@ -119,7 +110,6 @@ export default function MusicGamePage() {
         // 詳細ページへ遷移
         router.push(`/menu/${hitBlock.menuId}?name=${nameParam}&description=${descriptionParam}`);
       }
-      // --- ▲ 変更・追加 ▲ ---
     }
   }, [isPlaying, onJudge, router, menuItems]); // ← 変更: 依存配列にrouterを追加
 
@@ -198,7 +188,7 @@ export default function MusicGamePage() {
     
     const baseSpeed = (60 * C.PLAY_TIME_SECONDS) / C.TOTAL_NOTES;
 
-    // --- ▼ 変更点：味ごとのノーツを1つだけ、ランダムな位置に配置するロジック ▼ ---
+    // 味ごとのノーツを1つだけ、ランダムな位置に配置するロジック
     const totalNotes = C.TOTAL_NOTES;
     // 特殊な色付きノーツの数（メニューの数と総ノーツ数の少ない方）
     const numFlavorNotes = Math.min(menuItems.length, totalNotes); 
@@ -258,8 +248,6 @@ export default function MusicGamePage() {
       setShowFinalResult(true);
     }, 1000 * C.PLAY_TIME_SECONDS + 2000);
   }, [gameLoop, menuItems]); // C定数を依存配列から削除
-  
-  // --- useEffect フック ---
 
   // 初回レンダリング時にAudioオブジェクトを生成
   useEffect(() => {
@@ -294,7 +282,6 @@ export default function MusicGamePage() {
   useEffect(() => {
       gameStart();
   }, [menuItems, gameStart]);
-
 
   // キーボードイベント
   useEffect(() => {
