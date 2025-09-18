@@ -1,4 +1,4 @@
-interface Block {
+export interface Block {
   laneNumber: number;
   noteID: number;
   x: number;

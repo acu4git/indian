@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation'; // ← 追加: useRouterをインポート
 // 定数をまとめてインポート
 import * as C from './consts';
+import { Block } from './types';
 import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
