@@ -123,4 +123,4 @@ export const FLAVOR_COLORS = [
 ];
 
 // 店のID（環境変数から取得）
-export const STORE_ID = 'store-001'; //process.env.NEXT_PUBLIC_STORE_ID
+export const STORE_ID = process.env.NEXT_PUBLIC_STORE_ID ?? 'store-001';

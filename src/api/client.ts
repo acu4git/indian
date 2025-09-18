@@ -10,7 +10,7 @@ export type OrderResponse = {
 export type ApiError = { error: string; message: string };
 
 // .envがなければlocalhostを参照するようにしてある
-const NEXT_PUBLIC_API_BASE = "http://localhost:8080"; // process.env.NEXT_PUBLIC_API_BASE
+const NEXT_PUBLIC_API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8080";
 
 export async function fetchMenu(storeId: string): Promise<MenuItem[]> {
   const res = await fetch(`${NEXT_PUBLIC_API_BASE}/v1/stores/${storeId}/menu`);
