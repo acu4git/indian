@@ -163,7 +163,6 @@ export default function MusicGamePage() {
 
     if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
     
-    blocksRef.current = [];
     setJudgeCounts(Object.keys(C.JUDGE_TYPES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}));
     setComboCount(0);
     setMaxComboCount(0);
