@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'; // ← 追加: useRouterをイン�
 // 定数をまとめてインポート
 import * as C from './consts';
 import { Block } from './types';
+import { drawLanes } from './utils/lanes';
 import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
@@ -119,20 +120,6 @@ export default function MusicGamePage() {
     ctx.fillRect(0, 0, C.CANVAS_WIDTH, C.CANVAS_HEIGHT);
   }, []);
 
-  const drawLanes = useCallback((ctx: CanvasRenderingContext2D) => {
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-    for (let i = 0; i < C.LANE_LEFTS.length; i++) {
-      ctx.strokeRect(C.LANE_LEFTS[i], 0, C.LANE_WIDTH, C.CANVAS_HEIGHT);
-    }
-    ctx.strokeStyle = '#ff0';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(C.DEFAULT_LEFT, C.BUTTONS_TOP);
-    ctx.lineTo(C.DEFAULT_LEFT + 4 * C.LANE_WIDTH, C.BUTTONS_TOP);
-    ctx.stroke();
-  }, []);
-
   const drawBlocks = useCallback((ctx: CanvasRenderingContext2D) => {
     // POORの範囲を取得（画面外判定）
     const poorBound = C.getJudgeYBounds(C.DEFAULT_SPEED)['POOR'];
@@ -163,7 +150,7 @@ export default function MusicGamePage() {
     drawBlocks(ctx);
 
     gameLoopRef.current = requestAnimationFrame(gameLoop);
-  }, [clearCanvas, drawLanes, drawBlocks]);
+  }, [clearCanvas, drawBlocks]); // drawLanesは外部関数でuseCallbackではないので依存配列に入れない
 
   // ゲーム開始
   const gameStart = useCallback(() => {
