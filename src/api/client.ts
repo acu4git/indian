@@ -22,10 +22,7 @@ export async function fetchMenu(storeId: string): Promise<MenuItem[]> {
   return data.menu ?? [];
 }
 
-export async function createOrder(
-  storeId: string,
-  menuId: string
-): Promise<OrderResponse> {
+export async function createOrder(storeId: string, menuId: string): Promise<OrderResponse> {
   const res = await fetch(`${NEXT_PUBLIC_API_BASE}/v1/stores/${storeId}/orders`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
