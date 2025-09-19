@@ -30,9 +30,12 @@ export default async function MenuDetailPage({
 
     try {
         const data = await createOrder(C.STORE_ID, resolvedParams.id);
+        console.log('注文レスポンス:', data); // デバッグ用
         orderSuccess = true;
         orderId = data.id;
+        console.log('取得したorderId:', orderId); // デバッグ用
     } catch (e) {
+        console.error('注文エラー:', e); // デバッグ用
         error = e instanceof Error ? e.message : "不明なエラーが発生しました。";
     }
     
@@ -53,13 +56,15 @@ export default async function MenuDetailPage({
                         </p>
                         
                         {/* 注文成功時に注文詳細へのリンクを表示 */}
-                        {orderId && (
+                        {orderSuccess && orderId ? (
                             <Link 
-                                href={`/FlavorGame/order/${C.STORE_ID}/${orderId}`}
+                                href={`/FlavorGame/Order/${C.STORE_ID}/${orderId}`}
                                 className="inline-block mt-4 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors"
                             >
-                                注文を見る
+                                注文を見る (ID: {orderId})
                             </Link>
+                        ) : (
+                            <p className="text-red-400">注文IDが取得できませんでした</p>
                         )}
                     </>
                 )}
