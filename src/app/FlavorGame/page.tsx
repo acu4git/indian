@@ -3,16 +3,13 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation'; // ← 追加: useRouterをインポート
 // 定数をまとめてインポート
 import * as C from './consts';
-import { Block } from './types';
+import { Block, MenuItemWithColor } from './types';
 import { drawLanes } from './utils/lanes';
 import { CurryAd } from './components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
 // client.tsからfetchMenuとMenuItem型をインポート
-import { fetchMenu, type MenuItem } from './../../api/client';
-
-// MenuItem型に色情報を追加した新しい型を定義
-type MenuItemWithColor = MenuItem & { color: string };
+import { fetchMenu } from './../../api/client';
 
 export default function MusicGamePage() {
   // ← 追加: useRouterフックを呼び出し
