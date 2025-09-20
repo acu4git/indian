@@ -12,13 +12,10 @@ function AdPageComponent() {
   const returnUrl = searchParams.get('returnUrl');
 
   const [skipTimer, setSkipTimer] = useState(5);
-  const [canSkip, setCanSkip] = useState(false);
   // ▼▼▼ iframeを再マウント（リロード）させるためのキーを追加 ▼▼▼
   const [remountKey, setRemountKey] = useState(0);
 
-  useEffect(() => {
-    setCanSkip(false); // タイマー開始時に必ずスキップ不可状態にする
-    
+  useEffect(() => {    
     // 5秒間のカウントダウンタイマー
     const timer = setInterval(() => {
       setSkipTimer(prev => (prev > 0 ? prev - 1 : 0));
@@ -27,7 +24,6 @@ function AdPageComponent() {
     // 5秒後にタイマーを停止し、スキップ可能にする
     const skipTimeout = setTimeout(() => {
       clearInterval(timer);
-      setCanSkip(true);
     }, 5000);
 
     return () => {
@@ -97,7 +93,6 @@ function AdPageComponent() {
       <SkipToAd
         skipTimer={skipTimer}
         setSkipTimer={setSkipTimer}
-        canSkip={canSkip}
         setRemountKey={setRemountKey}
       />
     </main>
