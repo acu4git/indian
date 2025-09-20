@@ -10,12 +10,20 @@ function AdPageComponent() {
   const searchParams = useSearchParams();
   
   const videoId = searchParams.get('videoId');
-  const returnUrl = searchParams.get('returnUrl');
+  const returnUrl = searchParams.get('returnUrl') || '/'; // フォールバック先を設定
 
   const [skipTimer, setSkipTimer] = useState(5);
   // ▼▼▼ iframeを再マウント（リロード）させるためのキーを追加 ▼▼▼
   const [remountKey, setRemountKey] = useState(0);
+  
+  // ゲームに戻るための10秒タイマーを追加
+  const [returnTimer, setReturnTimer] = useState(10);
+  // 戻るボタンの表示状態を管理
+  const [showReturnButton, setShowReturnButton] = useState(false);
+  // ボタンの位置を動かすためのstate
+  const [buttonPosition, setButtonPosition] = useState({ top: '2%', left: '2%' });
 
+  // 広告スキップ用のタイマー
   useEffect(() => {    
     // 5秒間のカウントダウンタイマー
     const timer = setInterval(() => {
@@ -31,9 +39,42 @@ function AdPageComponent() {
       clearInterval(timer);
       clearTimeout(skipTimeout);
     };
-  }, [remountKey]); // remountKeyが変わるたびにタイマーをリスタートする
+  }, [remountKey]);
 
-  // バックボタンを押しても前の画面に戻れない
+  // ゲームに戻るためのタイマー
+  useEffect(() => {
+    // 広告がリセットされたらタイマーもリセット
+    setReturnTimer(10);
+    setShowReturnButton(false);
+
+    const timer = setInterval(() => {
+      setReturnTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setShowReturnButton(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [remountKey]);
+
+  // 押しにくいボタンを動かすためのuseEffect
+  useEffect(() => {
+    if (showReturnButton) {
+      const interval = setInterval(() => {
+        const top = 2 + Math.random() * 5;
+        const left = 2 + Math.random() * 5;
+        setButtonPosition({ top: `${top}%`, left: `${left}%` });
+      }, 800); // 0.8秒ごとに位置がランダムに変わる
+      return () => clearInterval(interval);
+    }
+  }, [showReturnButton]);
+
+
+  // バックボタン制御
   useEffect(() => {
     // ページに入ったときに、履歴に現在のページをもう一つ追加する
     // これにより、ユーザーが最初に戻るボタンを押したときに、このダミーの履歴に移動する
@@ -78,6 +119,10 @@ function AdPageComponent() {
     );
   }
 
+  const handleReturn = () => {
+    router.push(returnUrl);
+  };
+
   return (
     <main className="w-screen h-screen bg-black relative overflow-hidden cursor-none">
       <MovieAd
@@ -90,6 +135,18 @@ function AdPageComponent() {
         setSkipTimer={setSkipTimer}
         setRemountKey={setRemountKey}
       />
+
+      {/* 10秒経ったら表示される、非常に押しにくいボタン */}
+      {showReturnButton && (
+        <button
+          onClick={handleReturn}
+          className="absolute z-20 px-1 py-0 text-xs bg-gray-900 text-gray-800 rounded-full hover:bg-gray-800 hover:text-gray-700 transition-all duration-300 ease-in-out"
+          style={{ top: buttonPosition.top, left: buttonPosition.left, transition: 'top 0.5s, left 0.5s' }}
+        >
+          ×
+        </button>
+      )}
+
     </main>
   );
 }
