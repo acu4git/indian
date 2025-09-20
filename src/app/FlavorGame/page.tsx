@@ -107,7 +107,7 @@ export default function MusicGamePage() {
         const nameParam = orderedMenuItem?.name ? encodeURIComponent(orderedMenuItem.name) : '';
         const descriptionParam = orderedMenuItem?.description ? encodeURIComponent(orderedMenuItem.description) : '';
         // 詳細ページへ遷移
-        router.push(`/menu/${hitBlock.menuId}?name=${nameParam}&description=${descriptionParam}`);
+        router.push(`/FlavorGame/Menu/${hitBlock.menuId}?name=${nameParam}&description=${descriptionParam}`);
       }
     }
   }, [isPlaying, onJudge, router, menuItems]); // ← 変更: 依存配列にrouterを追加
