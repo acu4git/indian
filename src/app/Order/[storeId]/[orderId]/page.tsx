@@ -1,5 +1,5 @@
-import { SuccessCard } from '@/app/FlavorGame/components/successCard';
-import { ErrorCard } from '@/app/FlavorGame/components/errorCard';
+import { SuccessCard } from '@/app/Order/components/successCard';
+import { ErrorCard } from '@/app/components/errorCard';
 import { fetchOrderById, type OrderResponse } from '@/api/client';
 
 // Server Componentでは async/await が使える
