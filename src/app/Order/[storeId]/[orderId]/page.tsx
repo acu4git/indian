@@ -5,33 +5,48 @@ import { fetchOrderById, type OrderResponse } from '@/api/client';
 
 // --- Data Fetching Logic ---
 
-interface WaitingStatus {
+// 各レーンの状態
+export interface LaneStatus {
   currentNumber: number | null;
   calledNumbers: number[];
   onHoldNumbers: number[];
-  waitingNumbers: number[];
+}
+
+// ページ全体で使う待ち状況データ
+export interface WaitingStatus {
+  dineIn: LaneStatus;
+  takeout: LaneStatus;
+  waitingNumbers: number[]; // RightAreaで使う共通の待機リスト
 }
 
 /**
  * ダミーの待ち状況データを返す非同期関数
- * @param storeId 店舗ID (現在は未使用)
- * @returns {Promise<WaitingStatus>} 待ち状況データ
+ * イートインとテイクアウトのデータを分けて生成するように変更
  */
 async function fetchWaitingStatus(storeId: string): Promise<WaitingStatus> {
   console.log("Fetching DUMMY waiting status for store:", storeId);
-  // この関数はサーバーサイドでのみ実行されます。
   return {
-    currentNumber: 486,
-    calledNumbers: [489, 488, 487].sort((a, b) => b - a), // 降順にソート
-    onHoldNumbers: [465, 7292],
-    waitingNumbers: [460, 463, 466, 471, 473, 482, 483, 484, 485], // 自分の番号より前の人も含める
+    // イートイン用のデータ
+    dineIn: {
+      currentNumber: 486,
+      calledNumbers: [489, 488, 487].sort((a, b) => b - a),
+      onHoldNumbers: [465, 7292],
+    },
+    // テイクアウト用のデータ
+    takeout: {
+      currentNumber: 105,
+      calledNumbers: [108, 107, 106].sort((a, b) => b - a),
+      onHoldNumbers: [99],
+    },
+    // 右側エリアで表示する共通の待機番号リスト
+    waitingNumbers: [460, 463, 466, 471, 473, 482, 483, 484, 485, 109, 110],
   };
 }
 
 // --- Server Component ---
 
 export default async function OrderPage({
-  params: paramsPromise, // Promiseのまま受け取る
+  params: paramsPromise,
 }: {
   params: Promise<{ storeId: string; orderId: string }>;
 }) {
@@ -69,19 +84,14 @@ export default async function OrderPage({
   const waitingStatus: WaitingStatus = waitingStatusResult.value;
 
   const myTicketNumber = order.order_number ?? parseInt(orderId, 10);
-  const waitingCount = waitingStatus.waitingNumbers.filter(num => num < myTicketNumber).length;
 
   return (
     <>
-      {/* 画面回転とレイアウト制御のためのスタイル */}
       <style>
         {`
           .wait-status-grid {
-            /* デフォルトは1カラムレイアウト */
             grid-template-columns: 1fr;
           }
-
-          /* 画面幅が広い場合(PC) または スマホ縦画面の場合に2カラムレイアウトを適用 */
           @media (min-width: 768px), (orientation: portrait) and (max-width: 767px) {
             .wait-status-grid {
               grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -93,40 +103,32 @@ export default async function OrderPage({
               grid-column: span 2 / span 2;
             }
           }
-
-          /* スマートフォンの縦画面表示でコンテンツを90度回転させる */
           @media (orientation: portrait) and (max-width: 767px) {
-            body {
-              overflow: hidden; /* 本体がスクロールしないように固定 */
-            }
+            body { overflow: hidden; }
             .landscape-enforcer {
               transform: rotate(90deg);
-              transform-origin: bottom left; /* 左下を軸に回転 */
-              
-              /* 回転後の位置とサイズを調整 */
+              transform-origin: bottom left;
               position: absolute;
-              top: -100vw; /* viewportの幅の分だけ上に移動 */
+              top: -100vw;
               left: 0;
-              width: 100vh; /* 新しい幅 = 画面の高さ */
-              height: 100vw; /* 新しい高さ = 画面の幅 */
-
+              width: 100vh;
+              height: 100vw;
               overflow-x: hidden;
-              overflow-y: auto; /* コンテンツがはみ出た場合はスクロールを許可 */
+              overflow-y: auto;
             }
           }
         `}
       </style>
 
-      {/* 回転を適用するためのラッパー */}
       <div className="landscape-enforcer">
         <main className="mx-auto max-w-4xl p-4 font-sans bg-gray-50 min-h-screen">
-          {/* レイアウト制御用のカスタムクラスを適用 */}
           <div className="grid gap-6 wait-status-grid">
+            {/* LeftCardsにイートインとテイクアウトのデータを渡す */}
             <LeftCards
-              currentNumber={waitingStatus.currentNumber}
-              calledNumbers={waitingStatus.calledNumbers}
-              onHoldNumbers={waitingStatus.onHoldNumbers}
+              dineInData={waitingStatus.dineIn}
+              takeoutData={waitingStatus.takeout}
             />
+            {/* RightAreaは変更なし */}
             <RightArea
               waitingNumbers={waitingStatus.waitingNumbers}
               myTicketNumber={myTicketNumber}
@@ -137,4 +139,3 @@ export default async function OrderPage({
     </>
   );
 }
-
