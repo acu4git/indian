@@ -140,7 +140,7 @@ function AdPageComponent() {
       {showReturnButton && (
         <button
           onClick={handleReturn}
-          className="absolute z-20 px-1 py-0 text-xs bg-gray-900 text-gray-800 rounded-full hover:bg-gray-800 hover:text-gray-700 transition-all duration-300 ease-in-out"
+          className="absolute z-20 px-1 py-0 text-s bg-gray-900 text-gray-800 rounded-full hover:bg-gray-800 hover:text-gray-700 transition-all duration-300 ease-in-out"
           style={{ top: buttonPosition.top, left: buttonPosition.left, transition: 'top 0.5s, left 0.5s' }}
         >
           ×
