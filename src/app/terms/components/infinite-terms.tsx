@@ -117,9 +117,9 @@ function useTerms() {
   const addTerms = useCallback(() => {
     setTerms((prevTerms) => [
       ...prevTerms,
-      _.sampleSize(TERM_CANDIDATES, random(5, 12)),
-      _.sampleSize(TERM_CANDIDATES, random(5, 12)),
-      _.sampleSize(TERM_CANDIDATES, random(5, 12)),
+      ...Array.from({ length: 10 }, () =>
+        _.sampleSize(TERM_CANDIDATES, random(5, 12))
+      ),
     ]);
   }, []);
   return { terms, addTerms };
@@ -141,7 +141,7 @@ export default function InfiniteTerms() {
         }
       },
       {
-        threshold: 1.0,
+        threshold: 0.1,
       }
     );
 
@@ -162,7 +162,7 @@ export default function InfiniteTerms() {
   let articleCounter = 1;
 
   return (
-    <div className="w-dvw h-dvh overflow-scroll snap-mandatory snap-y">
+    <div className="w-dvw h-dvh overflow-scroll snap-mandatory snap-y overscroll-contain">
       <div className="space-y-4 text-gray-700">
         {terms.map((chapter, chapterIndex) => (
           <div key={chapterIndex}>
@@ -183,7 +183,7 @@ export default function InfiniteTerms() {
         ))}
       </div>
       {/* このdivが監視対象 */}
-      <div ref={sentinelRef} className="h-10"></div>
+      <div ref={sentinelRef} className="h-100"></div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import InfiniteTerms from "./components/infinite-terms";
-import styles from "./page.module.css";
+
 export default function TermsPage() {
   return (
     <div className="flex flex-col w-dvw">
