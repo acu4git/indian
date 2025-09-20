@@ -40,7 +40,6 @@ function AdPageComponent() {
     // ページに入ったときに、履歴に現在のページをもう一つ追加する
     // これにより、ユーザーが最初に戻るボタンを押したときに、このダミーの履歴に移動する
     history.pushState(null, '', location.href);
-
     const handlePopState = (event: PopStateEvent) => {
       // ユーザーが「戻る」を押すと、履歴が一つ前に戻る
       // それを検知したら、すぐに「進む」ことで元のページに強制的に戻す
@@ -56,7 +55,24 @@ function AdPageComponent() {
     };
   }, []);
 
-  // ▼▼▼ handleSkipをhandleRestartに改名し、ロジックを変更 ▼▼▼
+  // ▼▼▼ 閉じるボタン制御を追加 ▼▼▼
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      // 標準的なブラウザでは、カスタムメッセージは表示されないが、
+      // この設定により「このサイトを離れますか？」という確認ダイアログが表示される
+      event.preventDefault();
+      event.returnValue = ''; // 古いブラウザ用の設定
+    };
+
+    // ユーザーがページを離れようとしたとき（タブを閉じる、リロードなど）にイベントを発火
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // スキップしてコンポーネントが不要になったら、イベント監視を解除
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   const handleRestart = () => {
     // タイマーを5秒にリセット
     setSkipTimer(5);
@@ -76,7 +92,6 @@ function AdPageComponent() {
     <main className="w-screen h-screen bg-black relative overflow-hidden cursor-none">
       <div className="absolute inset-0">
         <iframe
-          // ▼▼▼ keyプロパティを追加 ▼▼▼
           key={remountKey}
           src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&controls=0&showinfo=0&iv_load_policy=3&modestbranding=1&loop=1&playlist=${videoId}`}
           title="Advertisement Video Player"
@@ -90,7 +105,6 @@ function AdPageComponent() {
       <div className="absolute bottom-4 right-4 z-10">
         {canSkip ? (
           <button
-            // ▼▼▼ onClickのハンドラを変更 ▼▼▼
             onClick={handleRestart}
             className="px-4 py-2 bg-black bg-opacity-70 text-white rounded-md hover:bg-opacity-90 transition-all cursor-pointer"
           >
