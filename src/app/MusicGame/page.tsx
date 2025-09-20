@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 // 定数をまとめてインポート
 import * as C from './consts';
-import { CurryAd } from './components/curryAd';
+import { CurryAd } from '@/app/Ad/components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
 

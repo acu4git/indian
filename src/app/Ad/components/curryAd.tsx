@@ -1,5 +1,5 @@
 'use client';
-import * as C from '../consts';
+import * as C from '@/app/FlavorGame/consts';
 import { useEffect, useState } from 'react';
 
 type CurryAdProps = {
