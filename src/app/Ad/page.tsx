@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { SkipToAd } from './components/skipToAd';
 
 function AdPageComponent() {
   const router = useRouter();
@@ -73,13 +74,6 @@ function AdPageComponent() {
     };
   }, []);
 
-  const handleRestart = () => {
-    // タイマーを5秒にリセット
-    setSkipTimer(5);
-    // iframeのkeyを変更して強制的に再マウント（動画をリスタート）させる
-    setRemountKey(prevKey => prevKey + 1);
-  };
-
   if (!videoId) {
     return (
       <div className="w-screen h-screen bg-black flex items-center justify-center text-white">
@@ -101,21 +95,13 @@ function AdPageComponent() {
           className="w-full h-full pointer-events-none"
         ></iframe>
       </div>
-      
-      <div className="absolute bottom-4 right-4 z-10">
-        {canSkip ? (
-          <button
-            onClick={handleRestart}
-            className="px-4 py-2 bg-black bg-opacity-70 text-white rounded-md hover:bg-opacity-90 transition-all cursor-pointer"
-          >
-            広告にスキップ
-          </button>
-        ) : (
-          <div className="px-4 py-2 bg-black bg-opacity-70 text-white rounded-md">
-            {skipTimer > 0 ? `${skipTimer}秒後にスキップ` : 'スキップ'}
-          </div>
-        )}
-      </div>
+
+      <SkipToAd
+        skipTimer={skipTimer}
+        setSkipTimer={setSkipTimer}
+        canSkip={canSkip}
+        setRemountKey={setRemountKey}
+      />
     </main>
   );
 }
