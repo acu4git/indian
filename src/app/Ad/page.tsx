@@ -12,43 +12,23 @@ function AdPageComponent() {
   const videoId = searchParams.get('videoId');
   const returnUrl = searchParams.get('returnUrl') || '/'; // フォールバック先を設定
 
-  const [skipTimer, setSkipTimer] = useState(5);
+  const [skipTimer, setSkipTimer] = useState(10);
   // ▼▼▼ iframeを再マウント（リロード）させるためのキーを追加 ▼▼▼
   const [remountKey, setRemountKey] = useState(0);
   
-  // ゲームに戻るための10秒タイマーを追加
-  const [returnTimer, setReturnTimer] = useState(10);
-  // 戻るボタンの表示状態を管理
   const [showReturnButton, setShowReturnButton] = useState(false);
   // ボタンの位置を動かすためのstate
   const [buttonPosition, setButtonPosition] = useState({ top: '2%', left: '2%' });
 
-  // 広告スキップ用のタイマー
-  useEffect(() => {    
-    // 5秒間のカウントダウンタイマー
-    const timer = setInterval(() => {
-      setSkipTimer(prev => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
-    // 5秒後にタイマーを停止し、スキップ可能にする
-    const skipTimeout = setTimeout(() => {
-      clearInterval(timer);
-    }, 5000);
-
-    return () => {
-      clearInterval(timer);
-      clearTimeout(skipTimeout);
-    };
-  }, [remountKey]);
-
-  // ゲームに戻るためのタイマー
+  // 広告スキップと「戻る」ボタン表示を兼ねる、1つのタイマー
   useEffect(() => {
-    // 広告がリセットされたらタイマーもリセット
-    setReturnTimer(10);
+    // 広告がリセットされたら、タイマーとボタンの状態を初期化
+    setSkipTimer(10);
     setShowReturnButton(false);
 
     const timer = setInterval(() => {
-      setReturnTimer(prev => {
+      setSkipTimer(prev => {
+        // カウントが1以下になったらタイマーを停止し、「戻る」ボタンを表示
         if (prev <= 1) {
           clearInterval(timer);
           setShowReturnButton(true);
@@ -58,6 +38,7 @@ function AdPageComponent() {
       });
     }, 1000);
 
+    // コンポーネントがアンマウントされる際にタイマーをクリア
     return () => clearInterval(timer);
   }, [remountKey]);
 
@@ -94,7 +75,7 @@ function AdPageComponent() {
     };
   }, []);
 
-  // ▼▼▼ 閉じるボタン制御を追加 ▼▼▼
+  // 閉じるボタン制御
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       // 標準的なブラウザでは、カスタムメッセージは表示されないが、
@@ -132,7 +113,6 @@ function AdPageComponent() {
 
       <SkipToAd
         skipTimer={skipTimer}
-        setSkipTimer={setSkipTimer}
         setRemountKey={setRemountKey}
       />
 
