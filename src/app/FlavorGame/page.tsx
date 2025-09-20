@@ -294,7 +294,7 @@ export default function MusicGamePage() {
 
         {isPlaying && (
             <div>
-              <CurryAd isPlaying={isPlaying} />
+              <CurryAd isPlaying={isPlaying} left={C.DEFAULT_LEFT-220} top={C.BUTTONS_TOP} />
               <Feedback comboCount={comboCount} judgeResult={judgeResult} />
             </div>
         )}
