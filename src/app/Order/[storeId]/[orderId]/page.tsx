@@ -1,4 +1,3 @@
-import { SuccessCard } from '@/app/Order/components/successCard';
 import { ErrorCard } from '@/app/components/errorCard';
 import { fetchOrderById, type OrderResponse } from '@/api/client';
 
@@ -72,10 +71,28 @@ export default async function OrderPage({
 
   return (
     <>
-      {/* 縦画面のときにコンテンツを90度回転させるためのスタイル */}
+      {/* 画面回転とレイアウト制御のためのスタイル */}
       <style>
         {`
-          /* スマートフォンの縦画面表示のみを対象 */
+          .wait-status-grid {
+            /* デフォルトは1カラムレイアウト */
+            grid-template-columns: 1fr;
+          }
+
+          /* 画面幅が広い場合(PC) または スマホ縦画面の場合に2カラムレイアウトを適用 */
+          @media (min-width: 768px), (orientation: portrait) and (max-width: 767px) {
+            .wait-status-grid {
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+            .wait-status-grid-left {
+              grid-column: span 1 / span 1;
+            }
+            .wait-status-grid-right {
+              grid-column: span 2 / span 2;
+            }
+          }
+
+          /* スマートフォンの縦画面表示でコンテンツを90度回転させる */
           @media (orientation: portrait) and (max-width: 767px) {
             body {
               overflow: hidden; /* 本体がスクロールしないように固定 */
@@ -86,7 +103,7 @@ export default async function OrderPage({
               
               /* 回転後の位置とサイズを調整 */
               position: absolute;
-              top: -100vw; /* 뷰포트 너비만큼 위로 이동 */
+              top: -100vw; /* viewportの幅の分だけ上に移動 */
               left: 0;
               width: 100vh; /* 新しい幅 = 画面の高さ */
               height: 100vw; /* 新しい高さ = 画面の幅 */
@@ -101,9 +118,10 @@ export default async function OrderPage({
       {/* 回転を適用するためのラッパー */}
       <div className="landscape-enforcer">
         <main className="mx-auto max-w-4xl p-4 font-sans bg-gray-50 min-h-screen">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* レイアウト制御用のカスタムクラスを適用 */}
+          <div className="grid gap-6 wait-status-grid">
             {/* 左側: 呼び出し番号エリア */}
-            <div className="md:col-span-1 bg-gray-900 text-white p-4 rounded-lg flex flex-col items-center shadow-lg">
+            <div className="wait-status-grid-left bg-gray-900 text-white p-4 rounded-lg flex flex-col items-center shadow-lg">
               <div className="w-full">
                 <h2 className="text-sm text-gray-400 border-b border-gray-600 pb-1 mb-2">呼び出し済み</h2>
                 <div className="flex flex-col items-center gap-2 mb-4">
@@ -132,7 +150,7 @@ export default async function OrderPage({
             </div>
 
             {/* 右側: 自分の状況 & 広告エリア */}
-            <div className="md:col-span-2">
+            <div className="wait-status-grid-right">
               <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-md mb-6 shadow" role="alert">
                 <p className="font-bold text-xl">あなたの整理番号: {myTicketNumber}</p>
                 <p className="text-lg mt-1">
@@ -171,3 +189,4 @@ export default async function OrderPage({
     </>
   );
 }
+
