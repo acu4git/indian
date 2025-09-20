@@ -11,7 +11,7 @@ type CurryAdProps = {
 export const CurryAd = ({ isPlaying, left, top }: CurryAdProps) => {
     // 広告に関するパラメータ
     const AD_WIDTH = 700;
-    const AD_HEIGHT = 70;
+    const AD_HEIGHT = 100;
     const AD_SPEED = 5.0;
     const AD_IMAGE_URL = `https://placehold.co/${AD_WIDTH}x${AD_HEIGHT}/FFD700/000000?text=Curry+Ad`;
 
