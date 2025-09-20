@@ -62,7 +62,6 @@ function AdPageComponent() {
       // 標準的なブラウザでは、カスタムメッセージは表示されないが、
       // この設定により「このサイトを離れますか？」という確認ダイアログが表示される
       event.preventDefault();
-      event.returnValue = ''; // 古いブラウザ用の設定
     };
 
     // ユーザーがページを離れようとしたとき（タブを閉じる、リロードなど）にイベントを発火
@@ -89,7 +88,6 @@ function AdPageComponent() {
           key={remountKey}
           src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0&controls=0&showinfo=0&iv_load_policy=3&modestbranding=1&loop=1&playlist=${videoId}`}
           title="Advertisement Video Player"
-          frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
           className="w-full h-full pointer-events-none"
