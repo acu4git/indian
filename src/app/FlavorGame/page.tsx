@@ -6,7 +6,7 @@ import * as C from './consts';
 import { Block, MenuItemWithColor } from './types';
 import { drawLanes } from './utils/lanes';
 import { createNotes } from './utils/notes';
-import { CurryAd } from './components/curryAd';
+import { CurryAd } from '@/app/Ad/components/curryAd';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
 // client.tsからfetchMenuとMenuItem型をインポート
@@ -294,7 +294,7 @@ export default function MusicGamePage() {
 
         {isPlaying && (
             <div>
-              <CurryAd isPlaying={isPlaying} />
+              <CurryAd isPlaying={isPlaying} left={C.DEFAULT_LEFT-220} top={C.BUTTONS_TOP} />
               <Feedback comboCount={comboCount} judgeResult={judgeResult} />
             </div>
         )}
