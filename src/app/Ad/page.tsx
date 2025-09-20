@@ -12,8 +12,12 @@ function AdPageComponent() {
 
   const [skipTimer, setSkipTimer] = useState(5);
   const [canSkip, setCanSkip] = useState(false);
+  // ▼▼▼ iframeを再マウント（リロード）させるためのキーを追加 ▼▼▼
+  const [remountKey, setRemountKey] = useState(0);
 
   useEffect(() => {
+    setCanSkip(false); // タイマー開始時に必ずスキップ不可状態にする
+    
     // 5秒間のカウントダウンタイマー
     const timer = setInterval(() => {
       setSkipTimer(prev => (prev > 0 ? prev - 1 : 0));
@@ -29,7 +33,7 @@ function AdPageComponent() {
       clearInterval(timer);
       clearTimeout(skipTimeout);
     };
-  }, []);
+  }, [remountKey]); // remountKeyが変わるたびにタイマーをリスタートする
 
   // バックボタンを押しても前の画面に戻れない
   useEffect(() => {
@@ -50,12 +54,14 @@ function AdPageComponent() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, []); // このeffectはマウント時に一度だけ実行
+  }, []);
 
-  const handleSkip = () => {
-    // returnUrlが指定されていればそこに戻る、なければホームページへ
-    // replaceを使うことで、ブラウザ履歴に広告ページを残さない
-    router.replace(returnUrl || '/');
+  // ▼▼▼ handleSkipをhandleRestartに改名し、ロジックを変更 ▼▼▼
+  const handleRestart = () => {
+    // タイマーを5秒にリセット
+    setSkipTimer(5);
+    // iframeのkeyを変更して強制的に再マウント（動画をリスタート）させる
+    setRemountKey(prevKey => prevKey + 1);
   };
 
   if (!videoId) {
@@ -70,6 +76,8 @@ function AdPageComponent() {
     <main className="w-screen h-screen bg-black relative overflow-hidden cursor-none">
       <div className="absolute inset-0">
         <iframe
+          // ▼▼▼ keyプロパティを追加 ▼▼▼
+          key={remountKey}
           src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&controls=0&showinfo=0&iv_load_policy=3&modestbranding=1&loop=1&playlist=${videoId}`}
           title="Advertisement Video Player"
           frameBorder="0"
@@ -82,14 +90,15 @@ function AdPageComponent() {
       <div className="absolute bottom-4 right-4 z-10">
         {canSkip ? (
           <button
-            onClick={handleSkip}
+            // ▼▼▼ onClickのハンドラを変更 ▼▼▼
+            onClick={handleRestart}
             className="px-4 py-2 bg-black bg-opacity-70 text-white rounded-md hover:bg-opacity-90 transition-all cursor-pointer"
           >
-            広告をスキップ
+            広告にスキップ
           </button>
         ) : (
           <div className="px-4 py-2 bg-black bg-opacity-70 text-white rounded-md">
-            {skipTimer > 0 ? `${skipTimer}秒後にスキップできます` : 'スキップ'}
+            {skipTimer > 0 ? `${skipTimer}秒後にスキップ` : 'スキップ'}
           </div>
         )}
       </div>
