@@ -10,7 +10,6 @@ type LeftCardsProps = {
   mobileReservationData: LaneStatus;
   verbalReservationData: LaneStatus;
   myTicketNumber: number | null; // myTicketNumberを追加
-  status: 'pending' | 'waitingPickup' | 'completed' | null; // statusを追加
 };
 
 /**
@@ -31,7 +30,6 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
   return (
     <div className="flex flex-col">
       <h3 className="text-lg font-bold text-center text-white">{title}</h3>
-      <span className="text-lg font-bold text-center text-white mb-2">予約完了</span>
       
       {/* 個別の番号カードを縦に並べる */}
       <div className="flex flex-col items-center gap-2">
@@ -69,7 +67,7 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
 };
 
 
-export const LeftCards = ({ mobileReservationData, verbalReservationData, myTicketNumber, status }: LeftCardsProps) => {
+export const LeftCards = ({ mobileReservationData, verbalReservationData, myTicketNumber }: LeftCardsProps) => {
     // completedの場合のみ、渡し済みのお客様に自分の番号を表示
     const displayedCurrentNumber = myTicketNumber;
 
@@ -80,11 +78,11 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
             {/* 上段: スマホ予約と口頭予約の情報を2列で表示 */}
             <div className="grid grid-cols-2 gap-4 w-full">
                 <CalledListColumn 
-                  title="スマホ" 
+                  title="web" 
                   calledNumbers={mobileReservationData.calledNumbers}
                 />
                 <CalledListColumn 
-                  title="口頭"
+                  title="local"
                   calledNumbers={verbalReservationData.calledNumbers}
                 />
             </div>
@@ -93,11 +91,11 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
             <div className="w-full flex flex-col items-center justify-center my-4">
                 <div className="flex items-center">
                     {/* ピクトグラム - publicフォルダの画像をルートパスで参照 */}
-                    <Image src="/regi_guide.jpg" alt="完了" width={80} height={40} />
+                    <Image src="/regi_guide.jpg" alt="完了" width={70} height={40} />
                     {/* 送付完了 COMPLETE. を縦に並べる */}
                     <div className="flex flex-col">
-                        <span className="text-2xl font-bold text-white leading-none">前回呼出</span>
-                        <span className="text-2xl font-bold text-white leading-none">PAST</span>
+                        <span className="text-2xl font-bold text-white leading-none">次世代</span>
+                        <span className="text-2xl font-bold text-white leading-none">NEXT</span>
                     </div>
                 </div>
                 {/* V字矢印 */}
@@ -122,7 +120,7 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
 
             {/* 下段: 統合された「渡し済みのお客様」エリア */}
             <div className="w-full bg-white text-gray-900 rounded-lg p-3 flex flex-col items-center mt-4 shadow-inner">
-                <span className="text-lg font-bold">渡し済みのお客様</span>
+                <span className="text-s">渡し済みのお客様</span>
                 {/* statusがcompletedの場合のみmyTicketNumberを表示、それ以外は既存のcurrentNumber */}
                 <div className="text-7xl font-black tracking-tighter flex items-center">
                   <span>{displayedCurrentNumber}</span>
