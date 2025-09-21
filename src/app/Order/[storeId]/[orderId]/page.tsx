@@ -20,38 +20,45 @@ export interface WaitingStatus {
 
 /**
  * myTicketNumberに近いランダムなダミーデータを生成する関数
+ * 券もそうだが、券以外でも被らせたくない
+ * 19個を券の数字連続周辺で生成する
+ * badUIだから券の大小関係なく、どの数字をどこに置くかはランダム
+ * 券だけはもちろんstatusに応じて場所を分ける
  */
 function generateWaitingStatus(storeId: string, myTicketNumber: number): WaitingStatus {
   console.log("Generating DUMMY waiting status for store:", storeId, "around ticket:", myTicketNumber);
 
-  // 指定された数値の周辺で、ユニークなランダムな数値を生成するヘルパー関数
-  const generateNumbers = (center: number, count: number, spread: number): number[] => {
-    const numbers = new Set<number>();
-    const maxAttempts = count * 3;
-    let attempts = 0;
-    while (numbers.size < count && attempts < maxAttempts) {
-      const num = center + Math.floor((Math.random() - 0.5) * 2 * spread);
-      if (num > 0 && num !== center) {
-        numbers.add(num);
-      }
-      attempts++;
+  // myTicketNumberを除外したユニークな19個の数字を生成
+  const allUniqueNumbers = new Set<number>();
+  const spread = 20; // myTicketNumber周辺の範囲
+  
+  // myTicketNumberを中心とした範囲でユニークな19個の数字を生成
+  while (allUniqueNumbers.size < 19) {
+    const randomOffset = Math.floor((Math.random() - 0.5) * 2 * spread);
+    const candidate = myTicketNumber + randomOffset;
+    
+    // 正の数で、myTicketNumberでない場合のみ追加
+    if (candidate > 0 && candidate !== myTicketNumber) {
+      allUniqueNumbers.add(candidate);
     }
-    return Array.from(numbers);
-  };
-
-  // myTicketNumberを基準にダミーデータを生成
-  const calledNumbers = generateNumbers(myTicketNumber + 8, 8, 15); // 自分より少し大きい番号を中心に生成
-  const waitingNumbers = generateNumbers(myTicketNumber - 15, 11, 30); // 自分より小さい番号を中心に生成
-  const currentMobile = Math.max(1, myTicketNumber - (Math.floor(Math.random() * 3) + 2)); // 2〜4つ前の番号
-  const currentTakeout = Math.max(1, myTicketNumber - (Math.floor(Math.random() * 4) + 5)); // 5〜8つ前の番号
-
+  }
+  
+  // 生成した19個の数字を配列に変換してシャッフル
+  const shuffledNumbers = Array.from(allUniqueNumbers).sort(() => Math.random() - 0.5);
+  
+  // 固定数で振り分け
+  // 将来的にモバイルと口頭で分けるのもありだが、今は共通にする
+  const calledNumbers = shuffledNumbers.slice(0, 8);  // 最初の8個
+  const currentNumber = shuffledNumbers.slice(8, 9);  // 1個
+  const waitingNumbers = shuffledNumbers.slice(9, 19); // 残りの10個
+  
   return {
     mobile: {
-      currentNumber: currentMobile,
+      currentNumber: currentNumber[0],
       calledNumbers: calledNumbers.slice(0, 4).sort((a, b) => b - a),
     },
     takeout: {
-      currentNumber: currentTakeout,
+      currentNumber: currentNumber[0],
       calledNumbers: calledNumbers.slice(4, 8).sort((a, b) => b - a),
     },
     waitingNumbers: waitingNumbers.sort((a, b) => a - b),
