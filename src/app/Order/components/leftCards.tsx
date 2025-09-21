@@ -120,7 +120,7 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
 
             {/* 下段: 統合された「渡し済みのお客様」エリア */}
             <div className="w-full bg-white text-gray-900 rounded-lg p-3 flex flex-col items-center mt-4 shadow-inner">
-                <span className="text-lg font-bold">渡し済みのお客様</span>
+                <span className="text-s">渡し済みのお客様</span>
                 {/* statusがcompletedの場合のみmyTicketNumberを表示、それ以外は既存のcurrentNumber */}
                 <div className="text-7xl font-black tracking-tighter flex items-center">
                   <span>{displayedCurrentNumber}</span>
