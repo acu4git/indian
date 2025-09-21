@@ -5,59 +5,47 @@ import { fetchOrderById, type OrderResponse } from '@/api/client';
 
 // --- Data Fetching Logic ---
 
-// 各レーンの状態
 export interface LaneStatus {
   currentNumber: number | null;
   calledNumbers: number[];
 }
 
-// ページ全体で使う待ち状況データ
 export interface WaitingStatus {
   mobile: LaneStatus;
   takeout: LaneStatus;
-  waitingNumbers: number[]; // RightAreaで使う共通の待機リスト
+  waitingNumbers: number[];
 }
 
-/**
- * ダミーの待ち状況データを返す非同期関数
- * イートインとテイクアウトのデータを分けて生成するように変更
- */
 async function fetchWaitingStatus(storeId: string): Promise<WaitingStatus> {
   console.log("Fetching DUMMY waiting status for store:", storeId);
   return {
-    // イートイン用のデータ
     mobile: {
       currentNumber: 22,
       calledNumbers: [35, 11, 66, 13].sort((a, b) => b - a),
     },
-    // テイクアウト用のデータ
     takeout: {
       currentNumber: 1,
       calledNumbers: [67, 12, 20, 4].sort((a, b) => b - a),
     },
-    // 右側エリアで表示する共通の待機番号リスト
     waitingNumbers: [9, 3, 33, 17, 15, 21, 28, 99, 68, 54, 40],
   };
 }
 
-// データ調整用の関数
 function adjustDataForOrderStatus(
   waitingStatus: WaitingStatus,
   orderStatus: string,
   myTicketNumber: number
 ) {
   const baseWaitingNumbers = [...waitingStatus.waitingNumbers];
-  
+
   if (orderStatus === 'pending') {
-    // pendingの場合、ランダムでどちらかのcalledNumbersにmyTicketNumberを追加
     if (Math.random() < 0.5) {
       const modifiedMobileData = { ...waitingStatus.mobile };
       const indexToReplace = Math.floor(Math.random() * modifiedMobileData.calledNumbers.length);
-      modifiedMobileData.calledNumbers = modifiedMobileData.calledNumbers.map((num, idx) => 
+      modifiedMobileData.calledNumbers = modifiedMobileData.calledNumbers.map((num, idx) =>
         idx === indexToReplace ? myTicketNumber : num
       );
       modifiedMobileData.calledNumbers = [...new Set(modifiedMobileData.calledNumbers)];
-      
       return {
         mobileReservationData: modifiedMobileData,
         verbalReservationData: { ...waitingStatus.takeout },
@@ -67,11 +55,10 @@ function adjustDataForOrderStatus(
     } else {
       const modifiedVerbalData = { ...waitingStatus.takeout };
       const indexToReplace = Math.floor(Math.random() * modifiedVerbalData.calledNumbers.length);
-      modifiedVerbalData.calledNumbers = modifiedVerbalData.calledNumbers.map((num, idx) => 
+      modifiedVerbalData.calledNumbers = modifiedVerbalData.calledNumbers.map((num, idx) =>
         idx === indexToReplace ? myTicketNumber : num
       );
       modifiedVerbalData.calledNumbers = [...new Set(modifiedVerbalData.calledNumbers)];
-      
       return {
         mobileReservationData: { ...waitingStatus.mobile },
         verbalReservationData: modifiedVerbalData,
@@ -94,7 +81,6 @@ function adjustDataForOrderStatus(
       waitingNumbers: baseWaitingNumbers
     };
   } else {
-    // デフォルト
     return {
       mobileReservationData: { ...waitingStatus.mobile },
       verbalReservationData: { ...waitingStatus.takeout },
@@ -139,19 +125,16 @@ export default async function OrderPage({
         <ErrorCard title="情報を取得できませんでした" message={errorMessage} />
       </main>
     );
-  }
-  else{
-    console.log("[Debug] Fetched order data:", orderResult.value); // 取得した注文データをログに出す
+  } else {
+    console.log("[Debug] Fetched order data:", orderResult.value);
   }
 
   const order: OrderResponse = orderResult.value;
   const waitingStatus: WaitingStatus = waitingStatusResult.value;
 
   const myTicketNumber = order.order_number ?? parseInt(orderId, 10);
-  const orderStatus = order.status; // 注文のステータスを取得
+  const orderStatus = order.status;
 
-  // 使用箇所
-  // 'waitingPickup', 'completed'は現状orderStatusの引数を直接文字列に変えて試してください
   const adjustedData = adjustDataForOrderStatus(waitingStatus, orderStatus, myTicketNumber);
 
   const mobileReservationDataForLeftCards = adjustedData.mobileReservationData;
@@ -164,64 +147,53 @@ export default async function OrderPage({
       <style>
         {`
           .wait-status-grid {
+            display: grid;
             grid-template-columns: 1fr;
+            gap: 1.5rem;
           }
-          @media (min-width: 768px), (orientation: portrait) and (max-width: 767px) {
+          @media (min-width: 768px) {
             .wait-status-grid {
               grid-template-columns: repeat(3, minmax(0, 1fr));
             }
-            .wait-status-grid-left {
-              grid-column: span 1 / span 1;
-            }
-            .wait-status-grid-right {
-              grid-column: span 2 / span 2;
-            }
           }
-          @media (orientation: portrait) and (max-width: 767px) {
-            html, body { 
-              overflow: hidden; 
-              margin: 0;
-              padding: 0;
-              height: 100%;
-            }
-            .landscape-enforcer {
-              transform: rotate(90deg);
-              transform-origin: bottom left;
-              position: fixed;
-              top: -100vw;
-              left: 0;
-              width: 100vh;
-              height: 100vw;
-              overflow-x: hidden;
-              overflow-y: scroll;
-              z-index: 1000;
-              background: #f9fafb;
-            }
-            .landscape-enforcer main {
-              min-height: calc(100vh + 2rem);
-              width: 100%;
-              padding: 1rem;
-              box-sizing: border-box;
-            }
-            .landscape-enforcer .wait-status-grid {
-              min-height: calc(100vh - 2rem);
-              gap: 1.5rem;
-            }
+
+          /* Landscape Enforcer */
+          .landscape-enforcer {
+            transform: rotate(90deg);
+            transform-origin: bottom left;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vh; /* Android向けに調整 */
+            height: 100vw; /* Android向けに調整 */
+            overflow-x: hidden;
+            overflow-y: auto;
+            z-index: 1000;
+            background: #f9fafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .landscape-enforcer main {
+            min-height: 100%;
+            width: 100%;
+            max-width: 100%;
+            padding: 1rem;
+            box-sizing: border-box;
           }
         `}
       </style>
 
       <div className="landscape-enforcer">
-        <main className="mx-auto max-w-4xl p-4 font-sans bg-gray-50 min-h-screen">
+        <main className="mx-auto max-w-4xl p-4 font-sans bg-gray-50">
           <div className="grid gap-6 wait-status-grid">
-            {/* LeftCardsに調整済みのデータを渡す */}
             <LeftCards
               mobileReservationData={mobileReservationDataForLeftCards}
               verbalReservationData={verbalReservationDataForLeftCards}
-              myTicketNumber={currentNumberForLeftCards} // completedの場合のみここにmyTicketNumberが入る
+              myTicketNumber={currentNumberForLeftCards}
               status={orderStatus}
             />
-            {/* RightAreaに調整済みのデータを渡す */}
             <RightArea
               waitingNumbers={waitingNumbersForRightArea}
               myTicketNumber={myTicketNumber}
