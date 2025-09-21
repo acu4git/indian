@@ -4,7 +4,6 @@ import Image from "next/image";
 export interface LaneStatus {
   currentNumber: number | null;
   calledNumbers: number[];
-  onHoldNumbers: number[];
 }
 type LeftCardsProps = {
   // 変数名を「スマホ予約」「口頭予約」の意味合いに変更
@@ -47,15 +46,6 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
     // completedの場合のみ、渡し済みのお客様に自分の番号を表示
     const displayedCurrentNumber = myTicketNumber;
 
-    // pendingの場合、ランダムにどちらかのcalledNumbersに自分の番号を追加
-    const mobileCalledNumbers = status === 'pending' && Math.random() < 0.5 && myTicketNumber !== null
-      ? [...mobileReservationData.calledNumbers, myTicketNumber].sort((a, b) => b - a)
-      : mobileReservationData.calledNumbers;
-
-    const verbalCalledNumbers = status === 'pending' && !mobileCalledNumbers.includes(myTicketNumber!) && myTicketNumber !== null
-      ? [...verbalReservationData.calledNumbers, myTicketNumber].sort((a, b) => b - a)
-      : verbalReservationData.calledNumbers;
-
     return (
         // 1つの大きなエリアとして定義
         <div className="wait-status-grid-left bg-gray-900 text-white p-4 rounded-lg flex flex-col shadow-lg h-full">
@@ -64,11 +54,11 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
             <div className="grid grid-cols-2 gap-4 w-full">
                 <CalledListColumn 
                   title="スマホ予約" 
-                  calledNumbers={mobileCalledNumbers}
+                  calledNumbers={mobileReservationData.calledNumbers}
                 />
                 <CalledListColumn 
                   title="口頭予約"
-                  calledNumbers={verbalCalledNumbers}
+                  calledNumbers={verbalReservationData.calledNumbers}
                 />
             </div>
 
@@ -79,8 +69,8 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
                     <Image src="/regi_guide.jpg" alt="完了" width={80} height={40} />
                     {/* 送付完了 COMPLETE. を縦に並べる */}
                     <div className="flex flex-col">
-                        <span className="text-2xl font-bold text-white leading-none">送付完了</span>
-                        <span className="text-2xl font-bold text-white leading-none">COMPLETE</span>
+                        <span className="text-2xl font-bold text-white leading-none">前回呼出</span>
+                        <span className="text-2xl font-bold text-white leading-none">PAST</span>
                     </div>
                 </div>
                 {/* 大きなV字矢印を3つ */}

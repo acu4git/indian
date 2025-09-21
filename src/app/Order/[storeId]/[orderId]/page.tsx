@@ -9,12 +9,11 @@ import { fetchOrderById, type OrderResponse } from '@/api/client';
 export interface LaneStatus {
   currentNumber: number | null;
   calledNumbers: number[];
-  onHoldNumbers: number[];
 }
 
 // ページ全体で使う待ち状況データ
 export interface WaitingStatus {
-  dineIn: LaneStatus;
+  mobile: LaneStatus;
   takeout: LaneStatus;
   waitingNumbers: number[]; // RightAreaで使う共通の待機リスト
 }
@@ -27,16 +26,14 @@ async function fetchWaitingStatus(storeId: string): Promise<WaitingStatus> {
   console.log("Fetching DUMMY waiting status for store:", storeId);
   return {
     // イートイン用のデータ
-    dineIn: {
+    mobile: {
       currentNumber: 486,
       calledNumbers: [489, 488, 487].sort((a, b) => b - a),
-      onHoldNumbers: [465, 7292],
     },
     // テイクアウト用のデータ
     takeout: {
       currentNumber: 105,
       calledNumbers: [108, 107, 106].sort((a, b) => b - a),
-      onHoldNumbers: [99],
     },
     // 右側エリアで表示する共通の待機番号リスト
     waitingNumbers: [460, 463, 466, 471, 473, 482, 483, 484, 485, 109, 110],
@@ -54,7 +51,7 @@ function adjustDataForOrderStatus(
   if (orderStatus === 'pending') {
     // pendingの場合、ランダムでどちらかのcalledNumbersにmyTicketNumberを追加
     if (Math.random() < 0.5) {
-      const modifiedMobileData = { ...waitingStatus.dineIn };
+      const modifiedMobileData = { ...waitingStatus.mobile };
       const indexToReplace = Math.floor(Math.random() * modifiedMobileData.calledNumbers.length);
       modifiedMobileData.calledNumbers = modifiedMobileData.calledNumbers.map((num, idx) => 
         idx === indexToReplace ? myTicketNumber : num
@@ -64,7 +61,7 @@ function adjustDataForOrderStatus(
       return {
         mobileReservationData: modifiedMobileData,
         verbalReservationData: { ...waitingStatus.takeout },
-        currentNumber: waitingStatus.dineIn.currentNumber,
+        currentNumber: waitingStatus.mobile.currentNumber,
         waitingNumbers: baseWaitingNumbers
       };
     } else {
@@ -76,22 +73,22 @@ function adjustDataForOrderStatus(
       modifiedVerbalData.calledNumbers = [...new Set(modifiedVerbalData.calledNumbers)];
       
       return {
-        mobileReservationData: { ...waitingStatus.dineIn },
+        mobileReservationData: { ...waitingStatus.mobile },
         verbalReservationData: modifiedVerbalData,
-        currentNumber: waitingStatus.dineIn.currentNumber,
+        currentNumber: waitingStatus.mobile.currentNumber,
         waitingNumbers: baseWaitingNumbers
       };
     }
   } else if (orderStatus === 'waitingPickup') {
     return {
-      mobileReservationData: { ...waitingStatus.dineIn },
+      mobileReservationData: { ...waitingStatus.mobile },
       verbalReservationData: { ...waitingStatus.takeout },
       currentNumber: waitingStatus.takeout.currentNumber,
       waitingNumbers: [...new Set([...baseWaitingNumbers, myTicketNumber])].sort(() => Math.random() - 0.5)
     };
   } else if (orderStatus === 'completed') {
     return {
-      mobileReservationData: { ...waitingStatus.dineIn },
+      mobileReservationData: { ...waitingStatus.mobile },
       verbalReservationData: { ...waitingStatus.takeout },
       currentNumber: myTicketNumber,
       waitingNumbers: baseWaitingNumbers
@@ -99,7 +96,7 @@ function adjustDataForOrderStatus(
   } else {
     // デフォルト
     return {
-      mobileReservationData: { ...waitingStatus.dineIn },
+      mobileReservationData: { ...waitingStatus.mobile },
       verbalReservationData: { ...waitingStatus.takeout },
       currentNumber: null,
       waitingNumbers: baseWaitingNumbers
@@ -155,7 +152,7 @@ export default async function OrderPage({
 
   // 使用箇所
   // 'waitingPickup', 'completed'は現状orderStatusの引数を直接文字列に変えて試してください
-  const adjustedData = adjustDataForOrderStatus(waitingStatus, 'completed', myTicketNumber);
+  const adjustedData = adjustDataForOrderStatus(waitingStatus, orderStatus, myTicketNumber);
 
   const mobileReservationDataForLeftCards = adjustedData.mobileReservationData;
   const verbalReservationDataForLeftCards = adjustedData.verbalReservationData;
