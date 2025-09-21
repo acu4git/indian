@@ -32,7 +32,7 @@ export const useFaceLandmarker = () => {
           videoRef.current.addEventListener("loadeddata", predictWebcam);
         }
       } catch (e: unknown) {
-        if (isMounted) setError(e.message);
+        if (isMounted && e instanceof Error) setError(e.message);
       } finally {
         if (isMounted) setIsLoading(false);
       }
