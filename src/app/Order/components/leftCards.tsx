@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 // 各レーンの状態
 export interface LaneStatus {
   currentNumber: number | null;
@@ -54,6 +56,37 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData }: Left
                   title="口頭予約"
                   calledNumbers={verbalReservationData.calledNumbers}
                 />
+            </div>
+
+            {/* スシローのような区切りとピクトグラム、送付完了 FIN. */}
+            <div className="w-full flex flex-col items-center justify-center my-4">
+                <div className="flex items-center">
+                    {/* ピクトグラム - publicフォルダの画像をルートパスで参照 */}
+                    <Image src="/regi_guide.jpg" alt="完了" width={80} height={40} />
+                    {/* 送付完了 FIN. を縦に並べる */}
+                    <div className="flex flex-col">
+                        <span className="text-2xl font-bold text-white leading-none">送付完了</span>
+                        <span className="text-2xl font-bold text-white leading-none">COMPLETE</span>
+                    </div>
+                </div>
+                {/* 大きなV字矢印を3つ */}
+                <div className="flex flex-col items-center mt-4 space-y-2"> {/* space-y-2 で矢印間のスペースを調整 */}
+                    {/* 1つ目のV字矢印 */}
+                    <div className="relative w-12 h-6">
+                        <div className="absolute top-0 left-0 w-1/2 h-full bg-white transform skew-y-12 origin-bottom-right"></div>
+                        <div className="absolute top-0 right-0 w-1/2 h-full bg-white transform -skew-y-12 origin-bottom-left"></div>
+                    </div>
+                    {/* 2つ目のV字矢印 */}
+                    <div className="relative w-12 h-6">
+                        <div className="absolute top-0 left-0 w-1/2 h-full bg-white transform skew-y-12 origin-bottom-right"></div>
+                        <div className="absolute top-0 right-0 w-1/2 h-full bg-white transform -skew-y-12 origin-bottom-left"></div>
+                    </div>
+                    {/* 3つ目のV字矢印 */}
+                    <div className="relative w-12 h-6">
+                        <div className="absolute top-0 left-0 w-1/2 h-full bg-white transform skew-y-12 origin-bottom-right"></div>
+                        <div className="absolute top-0 right-0 w-1/2 h-full bg-white transform -skew-y-12 origin-bottom-left"></div>
+                    </div>
+                </div>
             </div>
 
             {/* 下段: 統合された「渡し済みのお客様」エリア */}
