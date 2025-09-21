@@ -3,16 +3,18 @@ type RightAreaProps = {
   orderName: string;
 };
 
-// 左側コンポーネント(暫定)
+// 右側エリアのコンポーネント
 export const RightArea = ({ waitingNumbers, orderName }: RightAreaProps) => {
     const displayNumbers = waitingNumbers.sort(() => Math.random() - 0.5);
-    const videoId = "aLpcjQDiBDM"; // Rick Astley - Never Gonna Give You Up (Video)
+    // 3つの動画IDの配列を用意
+    const videoIds = ["aLpcjQDiBDM", "q_4mSG_jMSo", "O021KNJaIDI"]; 
+    // 配列からランダムに1つのIDを選択
+    const randomVideoId = videoIds[Math.floor(Math.random() * videoIds.length)];
 
-    // menuNameから「な」の前だけを抽出
-    const eventName = orderName.split('な')[0];;
+    // menuNameから「な」で区切ってイベント名と味の名前に分ける
+    const eventName = orderName.split('な')[0];
     const flavorName = orderName.split('な')[1] || 'カレー味';
 
-    // --- ここからが修正箇所 ---
     // ユーザーを困惑させるため、ランダムに選択されたカードを緑色にハイライトする
     // 0から表示されるカード数までの間で、ランダムにハイライトする個数を決定
     const highlightCount = Math.floor(Math.random() * (displayNumbers.length + 1));
@@ -20,7 +22,6 @@ export const RightArea = ({ waitingNumbers, orderName }: RightAreaProps) => {
     // ハイライトするカードのインデックスをランダムにシャッフルして取得
     const indices = Array.from(Array(displayNumbers.length).keys());
     const highlightedIndices = new Set(indices.sort(() => 0.5 - Math.random()).slice(0, highlightCount));
-    // --- ここまでが修正箇所 ---
 
     return (
         <div className="wait-status-grid-right">
@@ -35,7 +36,7 @@ export const RightArea = ({ waitingNumbers, orderName }: RightAreaProps) => {
             <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden shadow-lg">
                 <iframe
                 className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`}
+                src={`https://www.youtube.com/embed/${randomVideoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${randomVideoId}`}
                 title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
