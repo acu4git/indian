@@ -30,7 +30,6 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
   return (
     <div className="flex flex-col">
       <h3 className="text-lg font-bold text-center text-white">{title}</h3>
-      <span className="text-lg font-bold text-center text-white mb-2">予約完了</span>
       
       {/* 個別の番号カードを縦に並べる */}
       <div className="flex flex-col items-center gap-2">
@@ -79,11 +78,11 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
             {/* 上段: スマホ予約と口頭予約の情報を2列で表示 */}
             <div className="grid grid-cols-2 gap-4 w-full">
                 <CalledListColumn 
-                  title="スマホ" 
+                  title="web" 
                   calledNumbers={mobileReservationData.calledNumbers}
                 />
                 <CalledListColumn 
-                  title="口頭"
+                  title="local"
                   calledNumbers={verbalReservationData.calledNumbers}
                 />
             </div>
@@ -92,11 +91,11 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
             <div className="w-full flex flex-col items-center justify-center my-4">
                 <div className="flex items-center">
                     {/* ピクトグラム - publicフォルダの画像をルートパスで参照 */}
-                    <Image src="/regi_guide.jpg" alt="完了" width={80} height={40} />
+                    <Image src="/regi_guide.jpg" alt="完了" width={70} height={40} />
                     {/* 送付完了 COMPLETE. を縦に並べる */}
                     <div className="flex flex-col">
-                        <span className="text-2xl font-bold text-white leading-none">前回呼出</span>
-                        <span className="text-2xl font-bold text-white leading-none">PAST</span>
+                        <span className="text-2xl font-bold text-white leading-none">次世代</span>
+                        <span className="text-2xl font-bold text-white leading-none">NEXT</span>
                     </div>
                 </div>
                 {/* V字矢印 */}
