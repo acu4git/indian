@@ -125,8 +125,8 @@ export default async function OrderPage({
           <div className="grid gap-6 wait-status-grid">
             {/* LeftCardsにイートインとテイクアウトのデータを渡す */}
             <LeftCards
-              dineInData={waitingStatus.dineIn}
-              takeoutData={waitingStatus.takeout}
+              mobileReservationData={waitingStatus.dineIn}
+              verbalReservationData={waitingStatus.takeout}
             />
             {/* RightAreaは変更なし */}
             <RightArea
