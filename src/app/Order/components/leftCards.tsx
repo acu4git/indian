@@ -24,7 +24,7 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
       
       {/* 個別の番号カードを縦に並べる */}
       <div className="flex flex-col items-center gap-2">
-        {calledNumbers.slice(0, 4).map((num) => (
+        {calledNumbers.slice(0, 4).map((num) => ( // ここを0, 4に変更
           // 番号ひとつひとつを白いカードとして表示
           <div key={num} className="w-full bg-white text-gray-900 rounded-lg p-2 flex items-center justify-center shadow-inner">
             <span className="font-bold text-xl">{num}</span>
@@ -73,22 +73,22 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData, myTick
                         <span className="text-2xl font-bold text-white leading-none">PAST</span>
                     </div>
                 </div>
-                {/* 大きなV字矢印を3つ */}
-                <div className="flex flex-col items-center mt-4 space-y-2"> {/* space-y-2 で矢印間のスペースを調整 */}
+                {/* V字矢印 */}
+                <div className="flex flex-col items-center mt-2">
                     {/* 1つ目のV字矢印 */}
-                    <div className="relative w-8 h-8"> {/* 矢印全体のコンテナサイズ調整 */}
-                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-top-left"></div> {/* 左側の斜め線 */}
-                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-top-right"></div> {/* 右側の斜め線 */}
+                    <div className="relative w-8 h-8">
+                        <div className="absolute bottom-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-bottom-left"></div> 
+                        <div className="absolute bottom-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-bottom-right"></div>
                     </div>
-                    {/* 2つ目のV字矢印 */}
-                    <div className="relative w-8 h-8"> {/* 矢印全体のコンテナサイズ調整 */}
-                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-top-left"></div> {/* 左側の斜め線 */}
-                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-top-right"></div> {/* 右側の斜め線 */}
+                    {/* 2つ目のV字矢印 (ネガティブマージンで詰める) */}
+                    <div className="relative w-8 h-8 -mt-5">
+                        <div className="absolute bottom-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-bottom-left"></div> 
+                        <div className="absolute bottom-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-bottom-right"></div>
                     </div>
-                    {/* 3つ目のV字矢印 */}
-                    <div className="relative w-8 h-8"> {/* 矢印全体のコンテナサイズ調整 */}
-                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-top-left"></div> {/* 左側の斜め線 */}
-                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-top-right"></div> {/* 右側の斜め線 */}
+                    {/* 3つ目のV字矢印 (ネガティブマージンで詰める) */}
+                    <div className="relative w-8 h-8 -mt-5">
+                        <div className="absolute bottom-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-bottom-left"></div> 
+                        <div className="absolute bottom-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-bottom-right"></div>
                     </div>
                 </div>
             </div>

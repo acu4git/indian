@@ -27,16 +27,16 @@ async function fetchWaitingStatus(storeId: string): Promise<WaitingStatus> {
   return {
     // イートイン用のデータ
     mobile: {
-      currentNumber: 486,
-      calledNumbers: [489, 488, 487].sort((a, b) => b - a),
+      currentNumber: 22,
+      calledNumbers: [35, 11, 66, 13].sort((a, b) => b - a),
     },
     // テイクアウト用のデータ
     takeout: {
-      currentNumber: 105,
-      calledNumbers: [108, 107, 106].sort((a, b) => b - a),
+      currentNumber: 1,
+      calledNumbers: [67, 12, 20, 4].sort((a, b) => b - a),
     },
     // 右側エリアで表示する共通の待機番号リスト
-    waitingNumbers: [460, 463, 466, 471, 473, 482, 483, 484, 485, 109, 110],
+    waitingNumbers: [9, 3, 33, 17, 15, 21, 28, 99, 68, 54, 40],
   };
 }
 
