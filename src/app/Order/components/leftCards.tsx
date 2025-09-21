@@ -72,19 +72,19 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData }: Left
                 {/* 大きなV字矢印を3つ */}
                 <div className="flex flex-col items-center mt-4 space-y-2"> {/* space-y-2 で矢印間のスペースを調整 */}
                     {/* 1つ目のV字矢印 */}
-                    <div className="relative w-12 h-6">
-                        <div className="absolute top-0 left-0 w-1/2 h-full bg-white transform skew-y-12 origin-bottom-right"></div>
-                        <div className="absolute top-0 right-0 w-1/2 h-full bg-white transform -skew-y-12 origin-bottom-left"></div>
+                    <div className="relative w-8 h-8"> {/* 矢印全体のコンテナサイズ調整 */}
+                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-top-left"></div> {/* 左側の斜め線 */}
+                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-top-right"></div> {/* 右側の斜め線 */}
                     </div>
                     {/* 2つ目のV字矢印 */}
-                    <div className="relative w-12 h-6">
-                        <div className="absolute top-0 left-0 w-1/2 h-full bg-white transform skew-y-12 origin-bottom-right"></div>
-                        <div className="absolute top-0 right-0 w-1/2 h-full bg-white transform -skew-y-12 origin-bottom-left"></div>
+                    <div className="relative w-8 h-8"> {/* 矢印全体のコンテナサイズ調整 */}
+                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-top-left"></div> {/* 左側の斜め線 */}
+                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-top-right"></div> {/* 右側の斜め線 */}
                     </div>
                     {/* 3つ目のV字矢印 */}
-                    <div className="relative w-12 h-6">
-                        <div className="absolute top-0 left-0 w-1/2 h-full bg-white transform skew-y-12 origin-bottom-right"></div>
-                        <div className="absolute top-0 right-0 w-1/2 h-full bg-white transform -skew-y-12 origin-bottom-left"></div>
+                    <div className="relative w-8 h-8"> {/* 矢印全体のコンテナサイズ調整 */}
+                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 -rotate-45 origin-top-left"></div> {/* 左側の斜め線 */}
+                        <div className="absolute top-0 left-1/2 w-1 h-full bg-white transform -translate-x-1/2 rotate-45 origin-top-right"></div> {/* 右側の斜め線 */}
                     </div>
                 </div>
             </div>
