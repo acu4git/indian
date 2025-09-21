@@ -1,17 +1,10 @@
 type RightAreaProps = {
   waitingNumbers: number[];
-  myTicketNumber: number | null; // myTicketNumberをnull許容に変更
-  status: 'pending' | 'waitingPickup' | 'completed' | null; // statusを追加
 };
 
 // 左側コンポーネント(暫定)
-export const RightArea = ({ waitingNumbers, myTicketNumber, status }: RightAreaProps) => {
-    // statusがwaitingPickupの場合のみmyTicketNumberをwaitingNumbersに含める
-    const numbersToDisplay = status === 'waitingPickup' && myTicketNumber !== null
-      ? [...new Set([...waitingNumbers, myTicketNumber])]
-      : [...new Set(waitingNumbers)]; // waitingPickup以外ではmyTicketNumberを含めない
-
-    const displayNumbers = numbersToDisplay.sort(() => Math.random() - 0.5);
+export const RightArea = ({ waitingNumbers }: RightAreaProps) => {
+    const displayNumbers = waitingNumbers.sort(() => Math.random() - 0.5);
 
     return (
         <div className="wait-status-grid-right">
@@ -57,8 +50,6 @@ export const RightArea = ({ waitingNumbers, myTicketNumber, status }: RightAreaP
                                 style={{ minWidth: '70px' }} // カードの最小幅を設定
                             >
                                 <span className="relative z-10 transform skew-x-[15deg]">{num}</span> {/* 文字の傾きを戻す */}
-                                {/* 右側の三角部分 */}
-                                <div className={`absolute right-[-15px] top-0 w-0 h-0 border-t-[22px] border-b-[22px] border-l-[15px] border-l-gray-300 border-t-transparent border-b-transparent z-0`}></div>
                             </div>
                         ))}
                     </div>

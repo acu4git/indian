@@ -216,8 +216,6 @@ export default async function OrderPage({
               />
               <RightArea
                 waitingNumbers={waitingNumbersForRightArea}
-                myTicketNumber={myTicketNumber}
-                status={orderStatus}
               />
             </div>
           </main>
