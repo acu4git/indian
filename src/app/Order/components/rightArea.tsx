@@ -10,10 +10,10 @@ export const RightArea = ({ waitingNumbers }: RightAreaProps) => {
         <div className="wait-status-grid-right">
             {/* 右上: 自分の状況 */}
             <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-md mb-6 shadow" role="alert">
-            <p className="font-bold text-xl">あなたの運命の人: 5</p>
-            <p className="text-lg mt-1">
-                お客様の後には<span className="font-bold text-2xl mx-1 text-blue-900">13</span>組のお客様を待たせています。
-            </p>
+                <p className="font-bold text-xl">お客様lD: 20251011-1012</p>
+                <p className="text-lg mt-1">
+                    ※かき氷は稀にカレー味になります
+                </p>
             </div>
             {/* 右中: 広告 */}
             <div className="relative aspect-video bg-gray-200 rounded-lg overflow-hidden shadow-lg">
