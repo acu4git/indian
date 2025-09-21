@@ -178,17 +178,34 @@ export default async function OrderPage({
             }
           }
           @media (orientation: portrait) and (max-width: 767px) {
-            body { overflow: hidden; }
+            html, body { 
+              overflow: hidden; 
+              margin: 0;
+              padding: 0;
+              height: 100%;
+            }
             .landscape-enforcer {
               transform: rotate(90deg);
               transform-origin: bottom left;
-              position: absolute;
+              position: fixed;
               top: -100vw;
               left: 0;
               width: 100vh;
               height: 100vw;
               overflow-x: hidden;
-              overflow-y: auto;
+              overflow-y: scroll;
+              z-index: 1000;
+              background: #f9fafb;
+            }
+            .landscape-enforcer main {
+              min-height: calc(100vh + 2rem);
+              width: 100%;
+              padding: 1rem;
+              box-sizing: border-box;
+            }
+            .landscape-enforcer .wait-status-grid {
+              min-height: calc(100vh - 2rem);
+              gap: 1.5rem;
             }
           }
         `}
