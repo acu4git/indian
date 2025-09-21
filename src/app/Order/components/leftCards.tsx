@@ -10,7 +10,6 @@ type LeftCardsProps = {
   mobileReservationData: LaneStatus;
   verbalReservationData: LaneStatus;
   myTicketNumber: number | null; // myTicketNumberを追加
-  status: 'pending' | 'waitingPickup' | 'completed' | null; // statusを追加
 };
 
 /**
@@ -69,7 +68,7 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
 };
 
 
-export const LeftCards = ({ mobileReservationData, verbalReservationData, myTicketNumber, status }: LeftCardsProps) => {
+export const LeftCards = ({ mobileReservationData, verbalReservationData, myTicketNumber }: LeftCardsProps) => {
     // completedの場合のみ、渡し済みのお客様に自分の番号を表示
     const displayedCurrentNumber = myTicketNumber;
 

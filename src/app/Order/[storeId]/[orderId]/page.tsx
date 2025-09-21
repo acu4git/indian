@@ -219,7 +219,6 @@ export default async function OrderPage({
               mobileReservationData={mobileReservationDataForLeftCards}
               verbalReservationData={verbalReservationDataForLeftCards}
               myTicketNumber={currentNumberForLeftCards} // completedの場合のみここにmyTicketNumberが入る
-              status={orderStatus}
             />
             {/* RightAreaに調整済みのデータを渡す */}
             <RightArea
