@@ -45,7 +45,7 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
 
 export const LeftCards = ({ mobileReservationData, verbalReservationData, myTicketNumber, status }: LeftCardsProps) => {
     // completedの場合のみ、渡し済みのお客様に自分の番号を表示
-    const displayedCurrentNumber = status === 'completed' ? myTicketNumber : (mobileReservationData.currentNumber ?? verbalReservationData.currentNumber);
+    const displayedCurrentNumber = myTicketNumber;
 
     // pendingの場合、ランダムにどちらかのcalledNumbersに自分の番号を追加
     const mobileCalledNumbers = status === 'pending' && Math.random() < 0.5 && myTicketNumber !== null

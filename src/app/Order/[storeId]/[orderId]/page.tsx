@@ -43,6 +43,70 @@ async function fetchWaitingStatus(storeId: string): Promise<WaitingStatus> {
   };
 }
 
+// データ調整用の関数
+function adjustDataForOrderStatus(
+  waitingStatus: WaitingStatus,
+  orderStatus: string,
+  myTicketNumber: number
+) {
+  const baseWaitingNumbers = [...waitingStatus.waitingNumbers];
+  
+  if (orderStatus === 'pending') {
+    // pendingの場合、ランダムでどちらかのcalledNumbersにmyTicketNumberを追加
+    if (Math.random() < 0.5) {
+      const modifiedMobileData = { ...waitingStatus.dineIn };
+      const indexToReplace = Math.floor(Math.random() * modifiedMobileData.calledNumbers.length);
+      modifiedMobileData.calledNumbers = modifiedMobileData.calledNumbers.map((num, idx) => 
+        idx === indexToReplace ? myTicketNumber : num
+      );
+      modifiedMobileData.calledNumbers = [...new Set(modifiedMobileData.calledNumbers)];
+      
+      return {
+        mobileReservationData: modifiedMobileData,
+        verbalReservationData: { ...waitingStatus.takeout },
+        currentNumber: waitingStatus.dineIn.currentNumber,
+        waitingNumbers: baseWaitingNumbers
+      };
+    } else {
+      const modifiedVerbalData = { ...waitingStatus.takeout };
+      const indexToReplace = Math.floor(Math.random() * modifiedVerbalData.calledNumbers.length);
+      modifiedVerbalData.calledNumbers = modifiedVerbalData.calledNumbers.map((num, idx) => 
+        idx === indexToReplace ? myTicketNumber : num
+      );
+      modifiedVerbalData.calledNumbers = [...new Set(modifiedVerbalData.calledNumbers)];
+      
+      return {
+        mobileReservationData: { ...waitingStatus.dineIn },
+        verbalReservationData: modifiedVerbalData,
+        currentNumber: waitingStatus.dineIn.currentNumber,
+        waitingNumbers: baseWaitingNumbers
+      };
+    }
+  } else if (orderStatus === 'waitingPickup') {
+    return {
+      mobileReservationData: { ...waitingStatus.dineIn },
+      verbalReservationData: { ...waitingStatus.takeout },
+      currentNumber: waitingStatus.takeout.currentNumber,
+      waitingNumbers: [...new Set([...baseWaitingNumbers, myTicketNumber])].sort(() => Math.random() - 0.5)
+    };
+  } else if (orderStatus === 'completed') {
+    return {
+      mobileReservationData: { ...waitingStatus.dineIn },
+      verbalReservationData: { ...waitingStatus.takeout },
+      currentNumber: myTicketNumber,
+      waitingNumbers: baseWaitingNumbers
+    };
+  } else {
+    // デフォルト
+    return {
+      mobileReservationData: { ...waitingStatus.dineIn },
+      verbalReservationData: { ...waitingStatus.takeout },
+      currentNumber: null,
+      waitingNumbers: baseWaitingNumbers
+    };
+  }
+}
+
 // --- Server Component ---
 
 export default async function OrderPage({
@@ -89,41 +153,14 @@ export default async function OrderPage({
   const myTicketNumber = order.order_number ?? parseInt(orderId, 10);
   const orderStatus = order.status; // 注文のステータスを取得
 
-  // LeftCardsに渡すデータ
-  let mobileReservationDataForLeftCards = { ...waitingStatus.dineIn };
-  let verbalReservationDataForLeftCards = { ...waitingStatus.takeout };
-  let currentNumberForLeftCards: number | null = null;
+  // 使用箇所
+  // 'waitingPickup', 'completed'は現状orderStatusの引数を直接文字列に変えて試してください
+  const adjustedData = adjustDataForOrderStatus(waitingStatus, 'completed', myTicketNumber);
 
-  // RightAreaに渡すデータ
-  let waitingNumbersForRightArea = [...waitingStatus.waitingNumbers];
-
-  // statusに基づいてデータを調整
-  if (orderStatus === 'pending') {
-    // pendingの場合、ランダムでどちらかのcalledNumbersにmyTicketNumberを追加
-    if (Math.random() < 0.5) {
-      // mobileReservationDataForLeftCardsのcalledNumbersからランダムな要素をmyTicketNumberに変更
-      const indexToReplace = Math.floor(Math.random() * mobileReservationDataForLeftCards.calledNumbers.length);
-      mobileReservationDataForLeftCards.calledNumbers = mobileReservationDataForLeftCards.calledNumbers.map((num, idx) => 
-        idx === indexToReplace ? myTicketNumber : num
-      );
-      // myTicketNumberが既に存在する場合は重複排除のためSetを使う。ソートは行わない。
-      mobileReservationDataForLeftCards.calledNumbers = [...new Set(mobileReservationDataForLeftCards.calledNumbers)];
-    } else {
-      // verbalReservationDataForLeftCardsのcalledNumbersからランダムな要素をmyTicketNumberに変更
-      const indexToReplace = Math.floor(Math.random() * verbalReservationDataForLeftCards.calledNumbers.length);
-      verbalReservationDataForLeftCards.calledNumbers = verbalReservationDataForLeftCards.calledNumbers.map((num, idx) => 
-        idx === indexToReplace ? myTicketNumber : num
-      );
-      // myTicketNumberが既に存在する場合は重複排除のためSetを使う。ソートは行わない。
-      verbalReservationDataForLeftCards.calledNumbers = [...new Set(verbalReservationDataForLeftCards.calledNumbers)];
-    }
-  } else if (orderStatus === 'waitingPickup') {
-    // waitingPickupの場合、RightAreaのwaitingNumbersにmyTicketNumberを追加
-    waitingNumbersForRightArea = [...new Set([...waitingNumbersForRightArea, myTicketNumber])].sort(() => Math.random() - 0.5); // 既存のランダムソートを維持
-  } else if (orderStatus === 'completed') {
-    // completedの場合、LeftCardsの下段にmyTicketNumberを表示
-    currentNumberForLeftCards = myTicketNumber;
-  }
+  const mobileReservationDataForLeftCards = adjustedData.mobileReservationData;
+  const verbalReservationDataForLeftCards = adjustedData.verbalReservationData;
+  const currentNumberForLeftCards = adjustedData.currentNumber;
+  const waitingNumbersForRightArea = adjustedData.waitingNumbers;
 
   return (
     <>
