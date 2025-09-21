@@ -5,7 +5,7 @@ type RightAreaProps = {
 // 左側コンポーネント(暫定)
 export const RightArea = ({ waitingNumbers }: RightAreaProps) => {
     const displayNumbers = waitingNumbers.sort(() => Math.random() - 0.5);
-
+    const videoId = "aLpcjQDiBDM"; // Rick Astley - Never Gonna Give You Up (Video)
     return (
         <div className="wait-status-grid-right">
             {/* 右上: 自分の状況 */}
@@ -15,12 +15,15 @@ export const RightArea = ({ waitingNumbers }: RightAreaProps) => {
                     ※かき氷は稀にカレー味になります
                 </p>
             </div>
-            {/* 右中: 広告 */}
-            <div className="relative aspect-video bg-gray-200 rounded-lg overflow-hidden shadow-lg">
-            <div className="w-full h-full flex items-center justify-center bg-slate-300">
-                <span className="text-3xl text-slate-500">広告エリア</span>
-            </div>
-            <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs p-1 rounded">これは広告です</div>
+            {/* 中段: YouTube Iframeエリア */}
+            <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                <iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`}
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                ></iframe>
             </div>
 
             {/* 右下: 待機中 */}
