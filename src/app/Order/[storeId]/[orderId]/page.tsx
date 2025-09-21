@@ -79,11 +79,51 @@ export default async function OrderPage({
       </main>
     );
   }
+  else{
+    console.log("[Debug] Fetched order data:", orderResult.value); // 取得した注文データをログに出す
+  }
 
   const order: OrderResponse = orderResult.value;
   const waitingStatus: WaitingStatus = waitingStatusResult.value;
 
   const myTicketNumber = order.order_number ?? parseInt(orderId, 10);
+  const orderStatus = order.status; // 注文のステータスを取得
+
+  // LeftCardsに渡すデータ
+  let mobileReservationDataForLeftCards = { ...waitingStatus.dineIn };
+  let verbalReservationDataForLeftCards = { ...waitingStatus.takeout };
+  let currentNumberForLeftCards: number | null = null;
+
+  // RightAreaに渡すデータ
+  let waitingNumbersForRightArea = [...waitingStatus.waitingNumbers];
+
+  // statusに基づいてデータを調整
+  if (orderStatus === 'pending') {
+    // pendingの場合、ランダムでどちらかのcalledNumbersにmyTicketNumberを追加
+    if (Math.random() < 0.5) {
+      // mobileReservationDataForLeftCardsのcalledNumbersからランダムな要素をmyTicketNumberに変更
+      const indexToReplace = Math.floor(Math.random() * mobileReservationDataForLeftCards.calledNumbers.length);
+      mobileReservationDataForLeftCards.calledNumbers = mobileReservationDataForLeftCards.calledNumbers.map((num, idx) => 
+        idx === indexToReplace ? myTicketNumber : num
+      );
+      // myTicketNumberが既に存在する場合は重複排除のためSetを使う。ソートは行わない。
+      mobileReservationDataForLeftCards.calledNumbers = [...new Set(mobileReservationDataForLeftCards.calledNumbers)];
+    } else {
+      // verbalReservationDataForLeftCardsのcalledNumbersからランダムな要素をmyTicketNumberに変更
+      const indexToReplace = Math.floor(Math.random() * verbalReservationDataForLeftCards.calledNumbers.length);
+      verbalReservationDataForLeftCards.calledNumbers = verbalReservationDataForLeftCards.calledNumbers.map((num, idx) => 
+        idx === indexToReplace ? myTicketNumber : num
+      );
+      // myTicketNumberが既に存在する場合は重複排除のためSetを使う。ソートは行わない。
+      verbalReservationDataForLeftCards.calledNumbers = [...new Set(verbalReservationDataForLeftCards.calledNumbers)];
+    }
+  } else if (orderStatus === 'waitingPickup') {
+    // waitingPickupの場合、RightAreaのwaitingNumbersにmyTicketNumberを追加
+    waitingNumbersForRightArea = [...new Set([...waitingNumbersForRightArea, myTicketNumber])].sort(() => Math.random() - 0.5); // 既存のランダムソートを維持
+  } else if (orderStatus === 'completed') {
+    // completedの場合、LeftCardsの下段にmyTicketNumberを表示
+    currentNumberForLeftCards = myTicketNumber;
+  }
 
   return (
     <>
@@ -123,15 +163,18 @@ export default async function OrderPage({
       <div className="landscape-enforcer">
         <main className="mx-auto max-w-4xl p-4 font-sans bg-gray-50 min-h-screen">
           <div className="grid gap-6 wait-status-grid">
-            {/* LeftCardsにイートインとテイクアウトのデータを渡す */}
+            {/* LeftCardsに調整済みのデータを渡す */}
             <LeftCards
-              mobileReservationData={waitingStatus.dineIn}
-              verbalReservationData={waitingStatus.takeout}
+              mobileReservationData={mobileReservationDataForLeftCards}
+              verbalReservationData={verbalReservationDataForLeftCards}
+              myTicketNumber={currentNumberForLeftCards} // completedの場合のみここにmyTicketNumberが入る
+              status={orderStatus}
             />
-            {/* RightAreaは変更なし */}
+            {/* RightAreaに調整済みのデータを渡す */}
             <RightArea
-              waitingNumbers={waitingStatus.waitingNumbers}
+              waitingNumbers={waitingNumbersForRightArea}
               myTicketNumber={myTicketNumber}
+              status={orderStatus}
             />
           </div>
         </main>

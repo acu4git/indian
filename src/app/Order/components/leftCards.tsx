@@ -10,6 +10,8 @@ type LeftCardsProps = {
   // 変数名を「スマホ予約」「口頭予約」の意味合いに変更
   mobileReservationData: LaneStatus;
   verbalReservationData: LaneStatus;
+  myTicketNumber: number | null; // myTicketNumberを追加
+  status: 'pending' | 'waitingPickup' | 'completed' | null; // statusを追加
 };
 
 /**
@@ -23,7 +25,7 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
       
       {/* 個別の番号カードを縦に並べる */}
       <div className="flex flex-col items-center gap-2">
-        {calledNumbers.slice(0, 3).map((num) => (
+        {calledNumbers.slice(0, 4).map((num) => (
           // 番号ひとつひとつを白いカードとして表示
           <div key={num} className="w-full bg-white text-gray-900 rounded-lg p-2 flex items-center justify-center shadow-inner">
             <span className="font-bold text-xl">{num}</span>
@@ -41,7 +43,19 @@ const CalledListColumn = ({ title, calledNumbers }: { title: string, calledNumbe
 };
 
 
-export const LeftCards = ({ mobileReservationData, verbalReservationData }: LeftCardsProps) => {
+export const LeftCards = ({ mobileReservationData, verbalReservationData, myTicketNumber, status }: LeftCardsProps) => {
+    // completedの場合のみ、渡し済みのお客様に自分の番号を表示
+    const displayedCurrentNumber = status === 'completed' ? myTicketNumber : (mobileReservationData.currentNumber ?? verbalReservationData.currentNumber);
+
+    // pendingの場合、ランダムにどちらかのcalledNumbersに自分の番号を追加
+    const mobileCalledNumbers = status === 'pending' && Math.random() < 0.5 && myTicketNumber !== null
+      ? [...mobileReservationData.calledNumbers, myTicketNumber].sort((a, b) => b - a)
+      : mobileReservationData.calledNumbers;
+
+    const verbalCalledNumbers = status === 'pending' && !mobileCalledNumbers.includes(myTicketNumber!) && myTicketNumber !== null
+      ? [...verbalReservationData.calledNumbers, myTicketNumber].sort((a, b) => b - a)
+      : verbalReservationData.calledNumbers;
+
     return (
         // 1つの大きなエリアとして定義
         <div className="wait-status-grid-left bg-gray-900 text-white p-4 rounded-lg flex flex-col shadow-lg h-full">
@@ -50,20 +64,20 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData }: Left
             <div className="grid grid-cols-2 gap-4 w-full">
                 <CalledListColumn 
                   title="スマホ予約" 
-                  calledNumbers={mobileReservationData.calledNumbers} 
+                  calledNumbers={mobileCalledNumbers}
                 />
                 <CalledListColumn 
                   title="口頭予約"
-                  calledNumbers={verbalReservationData.calledNumbers}
+                  calledNumbers={verbalCalledNumbers}
                 />
             </div>
 
-            {/* スシローのような区切りとピクトグラム、送付完了 FIN. */}
+            {/* スシローのような区切りとピクトグラム、送付完了 COMPLETE. */}
             <div className="w-full flex flex-col items-center justify-center my-4">
                 <div className="flex items-center">
                     {/* ピクトグラム - publicフォルダの画像をルートパスで参照 */}
                     <Image src="/regi_guide.jpg" alt="完了" width={80} height={40} />
-                    {/* 送付完了 FIN. を縦に並べる */}
+                    {/* 送付完了 COMPLETE. を縦に並べる */}
                     <div className="flex flex-col">
                         <span className="text-2xl font-bold text-white leading-none">送付完了</span>
                         <span className="text-2xl font-bold text-white leading-none">COMPLETE</span>
@@ -92,9 +106,9 @@ export const LeftCards = ({ mobileReservationData, verbalReservationData }: Left
             {/* 下段: 統合された「渡し済みのお客様」エリア */}
             <div className="w-full bg-white text-gray-900 rounded-lg p-3 flex flex-col items-center mt-4 shadow-inner">
                 <span className="text-lg font-bold">渡し済みのお客様</span>
-                {/* ご提示のコードの通り、スマホ予約を優先して表示 */}
+                {/* statusがcompletedの場合のみmyTicketNumberを表示、それ以外は既存のcurrentNumber */}
                 <div className="text-7xl font-black tracking-tighter flex items-center">
-                  <span>{mobileReservationData.currentNumber ?? verbalReservationData.currentNumber}</span>
+                  <span>{displayedCurrentNumber}</span>
                 </div>
             </div>
         </div>
