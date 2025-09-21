@@ -166,12 +166,26 @@ export default async function OrderPage({
       <>
         <style>
           {`
+            /* ベーシックなスクロール有効化 */
+            html, body {
+              margin: 0;
+              padding: 0;
+              width: 100%;
+              height: 100%;
+              overflow: auto; /* 縦横スクロール有効 */
+            }
+
+            /* グリッドレイアウト設定 */
             .wait-status-grid {
               grid-template-columns: 1fr;
+              min-height: 100vh; /* 最小高さを設定 */
             }
-            @media (min-width: 768px), (orientation: portrait) and (max-width: 767px) {
+
+            /* デスクトップレイアウト */
+            @media (min-width: 768px) {
               .wait-status-grid {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
+                min-width: 1000px; /* 横スクロールを確実にするための最小幅 */
               }
               .wait-status-grid-left {
                 grid-column: span 1 / span 1;
@@ -180,13 +194,9 @@ export default async function OrderPage({
                 grid-column: span 2 / span 2;
               }
             }
+
+            /* モバイル縦向きでも横スクロール対応 */
             @media (orientation: portrait) and (max-width: 767px) {
-              html, body { 
-                overflow: hidden; 
-                margin: 0;
-                padding: 0;
-                height: 100%;
-              }
               .landscape-enforcer {
                 transform: rotate(90deg);
                 transform-origin: bottom left;
@@ -195,37 +205,92 @@ export default async function OrderPage({
                 left: 0;
                 width: 100vh;
                 height: 100vw;
-                overflow-x: hidden;
-                overflow-y: scroll;
+                overflow: auto; /* 縦横スクロール有効 */
                 z-index: 1000;
                 background: #f9fafb;
               }
+              
               .landscape-enforcer main {
-                min-height: calc(100vh + 2rem);
-                width: 100%;
+                min-height: 120vh; /* コンテンツを少し長くして縦スクロールを確保 */
+                min-width: 120%; /* コンテンツを少し広くして横スクロールを確保 */
+                width: max-content; /* コンテンツ幅に合わせる */
                 padding: 1rem;
                 box-sizing: border-box;
               }
+              
               .landscape-enforcer .wait-status-grid {
+                grid-template-columns: repeat(3, minmax(300px, 1fr)); /* 固定幅でスクロール確保 */
                 min-height: calc(100vh - 2rem);
+                min-width: 900px; /* 横スクロール用の最小幅 */
                 gap: 1.5rem;
               }
+              
+              .landscape-enforcer .wait-status-grid-left {
+                grid-column: span 1 / span 1;
+              }
+              
+              .landscape-enforcer .wait-status-grid-right {
+                grid-column: span 2 / span 2;
+              }
+            }
+
+            /* 通常の横向きモバイル */
+            @media (orientation: landscape) and (max-width: 1023px) {
+              .wait-status-grid {
+                grid-template-columns: repeat(3, minmax(300px, 1fr));
+                min-width: 900px; /* 横スクロール確保 */
+              }
+              .wait-status-grid-left {
+                grid-column: span 1 / span 1;
+              }
+              .wait-status-grid-right {
+                grid-column: span 2 / span 2;
+              }
+              
+              main {
+                min-height: 120vh; /* 縦スクロール確保 */
+                overflow: auto;
+              }
+            }
+
+            /* スクロールバーのスタイリング（オプション） */
+            ::-webkit-scrollbar {
+              width: 8px;
+              height: 8px;
+            }
+            
+            ::-webkit-scrollbar-track {
+              background: #f1f1f1;
+              border-radius: 4px;
+            }
+            
+            ::-webkit-scrollbar-thumb {
+              background: #c1c1c1;
+              border-radius: 4px;
+            }
+            
+            ::-webkit-scrollbar-thumb:hover {
+              background: #a8a8a8;
             }
           `}
         </style>
 
         <div className="landscape-enforcer">
-          <main className="mx-auto max-w-4xl p-4 font-sans bg-gray-50 min-h-screen">
+          <main className="mx-auto max-w-none p-4 font-sans bg-gray-50">
             <div className="grid gap-6 wait-status-grid">
-              <LeftCards
-                mobileReservationData={mobileReservationDataForLeftCards}
-                verbalReservationData={verbalReservationDataForLeftCards}
-                myTicketNumber={currentNumberForLeftCards}
-              />
-              <RightArea
-                waitingNumbers={waitingNumbersForRightArea}
-                orderName={orderName}
-              />
+              <div className="wait-status-grid-left">
+                <LeftCards
+                  mobileReservationData={mobileReservationDataForLeftCards}
+                  verbalReservationData={verbalReservationDataForLeftCards}
+                  myTicketNumber={currentNumberForLeftCards}
+                />
+              </div>
+              <div className="wait-status-grid-right">
+                <RightArea
+                  waitingNumbers={waitingNumbersForRightArea}
+                  orderName={orderName}
+                />
+              </div>
             </div>
           </main>
         </div>
