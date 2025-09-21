@@ -1,18 +1,23 @@
 type RightAreaProps = {
   waitingNumbers: number[];
+  orderName: string;
 };
 
 // 左側コンポーネント(暫定)
-export const RightArea = ({ waitingNumbers }: RightAreaProps) => {
+export const RightArea = ({ waitingNumbers, orderName }: RightAreaProps) => {
     const displayNumbers = waitingNumbers.sort(() => Math.random() - 0.5);
     const videoId = "aLpcjQDiBDM"; // Rick Astley - Never Gonna Give You Up (Video)
+
+    // menuNameから「な」の前だけを抽出
+    const eventName = orderName.split('な')[0];;
+    const flavorName = orderName.split('な')[1] || 'カレー味';
     return (
         <div className="wait-status-grid-right">
             {/* 右上: 自分の状況 */}
             <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-md mb-6 shadow" role="alert">
-                <p className="font-bold text-xl">お客様lD: 20251011-1012</p>
+                <p className="font-bold text-xl">{eventName}なお客様lD: 20251011-1012</p>
                 <p className="text-lg mt-1">
-                    ※かき氷は稀にカレー味になります
+                    ※{flavorName}は稀にカレー味になります
                 </p>
             </div>
             {/* 中段: YouTube Iframeエリア */}
@@ -28,7 +33,7 @@ export const RightArea = ({ waitingNumbers }: RightAreaProps) => {
 
             {/* 右下: 待機中 */}
             <div className="mt-6">
-                <h3 className="font-bold text-gray-700">呼び出し中のお客様番号</h3>
+                <h3 className="font-bold text-gray-700">呼出中のお客様番号</h3>
                 <div className="flex items-center mt-2"> {/* V字矢印とカード群を横並びにするためのflexコンテナ */}
                     {/* 左向きV字矢印を2つ (横に並べてサイズを調整) */}
                     <div className="flex items-center mr-4"> {/* V字矢印全体を横に並べるためのコンテナ */}

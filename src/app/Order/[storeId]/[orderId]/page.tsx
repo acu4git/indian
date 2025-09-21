@@ -149,6 +149,7 @@ export default async function OrderPage({
 
     const myTicketNumber = order.order_number ?? parseInt(orderId, 10);
     const orderStatus = order.status;
+    const orderName = order.menu_name;
 
     // 2. myTicketNumberを使って、それに近いダミーの待ち状況データを生成
     const waitingStatus: WaitingStatus = generateWaitingStatus(storeId, myTicketNumber);
@@ -223,6 +224,7 @@ export default async function OrderPage({
               />
               <RightArea
                 waitingNumbers={waitingNumbersForRightArea}
+                orderName={orderName}
               />
             </div>
           </main>
