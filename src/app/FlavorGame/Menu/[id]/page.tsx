@@ -118,7 +118,7 @@ export default async function MenuDetailPage({
                                 <Link
                                     href={`/terms?storeId=${C.STORE_ID}&orderId=${orderId}`}
                                 >
-                                    0r4er14-{orderId}
+                                    0r4rl4-{orderId}
                                 </Link>
                             ) : (
                                 <p className="text-red-400">注文IDが取得できませんでした</p>
