@@ -50,7 +50,7 @@ export default async function MenuDetailPage({
                     </>
                 ) : (
                     <>
-                        <h1 className="text-4xl font-bold mb-4">注文が完了しました！</h1>
+                        <h1 className="text-4xl font-bold mb-4">勝手に注文しました！</h1>
                         <p className="text-xl mb-6">
                             {resolvedSearchParams.name || '商品名不明'}
                         </p>
@@ -62,11 +62,26 @@ export default async function MenuDetailPage({
                                 href={`/terms?storeId=${C.STORE_ID}&orderId=${orderId}`}
                                 className="inline-block mt-4 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors"
                             >
-                                注文を見る (ID: {orderId})
+                                さらに注文したい (ID: {orderId})
                             </Link>
                         ) : (
                             <p className="text-red-400">注文IDが取得できませんでした</p>
                         )}
+                        <div className="my-8 bg-white text-black p-4 rounded-md max-w-xs mx-auto">
+                            <h3 className="text-lg font-bold mb-4 text-gray-800">セットを選択</h3>
+                            <div className="flex justify-around">
+                                {['4袋', '8袋', '36袋'].map((set) => (
+                                    <div key={set} className="flex flex-col items-center space-y-2">
+                                        <label htmlFor={`set-${set}`} className="text-sm">{set}セット</label>
+                                        <input type="radio" name="product-set" id={`set-${set}`} className="w-5 h-5" />
+                                        <div className="w-4 h-4 border border-black rounded-full" title="在庫状況"></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <button className="absolute bottom-5 right-5 z-10 px-8 py-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full shadow-lg transition-transform duration-300 hover:scale-110">
+                            確定
+                        </button>
                     </>
                 )}
             </div>
