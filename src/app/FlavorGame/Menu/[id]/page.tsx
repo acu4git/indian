@@ -95,23 +95,23 @@ export default async function MenuDetailPage({
                         {/* --- Bad UI Element: Confusing Table Layout --- */}
                         <div className="my-8 bg-white text-black p-4 rounded-md max-w-xs mx-auto border border-gray-300">
                             <div className="flex justify-between items-center border-b border-gray-300 pb-2 mb-2">
-                                <h3 className="text-lg font-bold text-gray-800">セット</h3>
-                                <h3 className="text-lg font-bold text-gray-800">選択</h3>
+                                <h3 className="text-lg font-bold text-gray-800">福神漬もおすすめです</h3>
                             </div>
                             <div>
                                 {['4袋', '8袋', '36袋'].map((set) => (
                                     <div key={set} className="flex items-center justify-between py-2 border-b border-gray-300 last:border-b-0">
-                                        <label htmlFor={`set-${set}`} className="text-sm">{set}セット</label>
+                                        {/* ラベルも「〇〇辛」のようにすると、より意味が分からなくなります */}
+                                        <label htmlFor={`set-${set}`} className="text-sm">{set}</label>
                                         <div className="flex flex-col items-center">
                                             <input type="radio" name="product-set" id={`set-${set}`} className="w-5 h-5" />
-                                            <div className="w-4 h-4 border border-black rounded-full mt-1" title="在庫状況"></div>
+                                            {/* このインジケーターが何なのか、誰にも分からない */}
+                                            <div className="w-4 h-4 border border-black rounded-full mt-1" title="謎のインジケーター"></div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        
-                        
+                                   
                         {/* --- Bad UI Element: Misleading Buttons --- */}
                         <div className="mt-8 flex justify-between items-center w-full">
                             {orderSuccess && orderId ? (
@@ -126,7 +126,7 @@ export default async function MenuDetailPage({
 
                             <div className="flex items-center space-x-4">
                                <button className="px-8 py-4 bg-red-600 hover:bg-red-800 text-white font-bold rounded-full shadow-lg">
-                                    合計
+                                    会言十
                                 </button>
                                 <button className="px-8 py-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full shadow-lg transition-transform duration-300 hover:scale-110">
                                     キャソセル
