@@ -95,7 +95,7 @@ export default async function MenuDetailPage({
                         {/* --- Bad UI Element: Confusing Table Layout --- */}
                         <div className="my-8 bg-white text-black p-4 rounded-md max-w-xs mx-auto border border-gray-300">
                             <div className="flex justify-between items-center border-b border-gray-300 pb-2 mb-2">
-                                <h3 className="text-lg font-bold text-gray-800">福神漬もおすすめです</h3>
+                                <h3 className="text-lg font-bold text-yellow-100">福神漬もおすすめです</h3>
                             </div>
                             <div>
                                 {['4袋', '8袋', '36袋'].map((set) => (
