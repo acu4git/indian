@@ -23,6 +23,33 @@ export default async function MenuDetailPage({
         );
     }
 
+    // --- Bad UI Logic ---
+    const badText = (resolvedSearchParams.name || '') 
+                  + ` は きっとおそらく${resolvedSearchParams.description}です...たぶん。`;
+    
+    let badTexts = [badText, '', ''];
+    // テキストをランダムな2点で分割して3つの部分に分ける
+    if (badText.length > 2) {
+        let p1 = Math.floor(Math.random() * (badText.length - 1)) + 1;
+        let p2 = Math.floor(Math.random() * (badText.length - 1)) + 1;
+        
+        while (p1 === p2) {
+            p2 = Math.floor(Math.random() * (badText.length - 1)) + 1;
+        }
+
+        if (p1 > p2) [p1, p2] = [p2, p1]; // p1がp2より小さくなるように入れ替え
+
+        badTexts = [
+            badText.slice(0, p1),
+            badText.slice(p1, p2),
+            badText.slice(p2)
+        ];
+    }
+
+    // より大きなインデントをランダムに生成
+    const lineBreaks = [Math.floor(Math.random() * 300), Math.floor(Math.random() * 300), Math.floor(Math.random() * 300)];
+
+
     // サーバーサイドで直接注文処理を実行
     let orderSuccess = false;
     let error = null;
@@ -52,10 +79,18 @@ export default async function MenuDetailPage({
                     <>
                         <h1 className="text-4xl font-bold mb-4 text-lime-400">勝手に注文しました！</h1>
                         
-                        {/* --- Bad UI Element: Mismatch Content --- */}
-                        <p className="text-xl mb-6">
-                            {resolvedSearchParams.name || '商品名不明'}
-                        </p>
+                        {/* --- Bad UI Element: Mismatch Content & Messy Indentation --- */}
+                        <div className="text-xl mb-2 text-pink-300 text-left font-extrabold text-pink-500 overflow-hidden">
+                            <p style={{ paddingLeft: `${lineBreaks[0]}px` }}>
+                                {badTexts[0]}
+                            </p>
+                            <p style={{ paddingLeft: `${lineBreaks[1]}px` }}>
+                                {badTexts[1]}
+                            </p>
+                            <p style={{ paddingLeft: `${lineBreaks[2]}px` }}>
+                                {badTexts[2]}
+                            </p>
+                        </div>
 
                         {/* --- Bad UI Element: Confusing Table Layout --- */}
                         <div className="my-8 bg-white text-black p-4 rounded-md max-w-xs mx-auto border border-gray-300">
@@ -82,9 +117,8 @@ export default async function MenuDetailPage({
                             {orderSuccess && orderId ? (
                                 <Link
                                     href={`/terms?storeId=${C.STORE_ID}&orderId=${orderId}`}
-                                    className="px-6 py-3 bg-red-600 hover:bg-red-800 text-white font-semibold rounded-lg transition-colors shadow-md"
                                 >
-                                    注文を見る (ID: {orderId})
+                                    0r4er14-{orderId}
                                 </Link>
                             ) : (
                                 <p className="text-red-400">注文IDが取得できませんでした</p>
@@ -92,10 +126,10 @@ export default async function MenuDetailPage({
 
                             <div className="flex items-center space-x-4">
                                <button className="px-8 py-4 bg-red-600 hover:bg-red-800 text-white font-bold rounded-full shadow-lg">
-                                    移動
+                                    合計
                                 </button>
                                 <button className="px-8 py-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full shadow-lg transition-transform duration-300 hover:scale-110">
-                                    確定
+                                    キャソセル
                                 </button>
                             </div>
                         </div>
