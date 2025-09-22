@@ -12,7 +12,7 @@ export default function IgnoreButton() {
   return (
     <button
       onClick={handleClick}
-      className="ml-66 rounded-3xl bg-red-600 px-4 py-2 text-white text-sm font-semibold opacity-20 hover:opacity-100 transition-opacity"
+      className="ml-66 rounded-3xl bg-red-600 px-4 py-2 text-white text-sm font-semibold opacity-40 hover:opacity-100 transition-opacity"
     >
       無視する
     </button>
