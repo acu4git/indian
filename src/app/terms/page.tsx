@@ -1,6 +1,13 @@
 import { Suspense } from "react";
 import AgreementCard from "./components/agreement-card";
 import InfiniteTerms from "./components/infinite-terms";
+import {
+  AnnoyingBannerAd,
+  AnnoyingOverlayAd,
+  AnnoyingSlideInAd,
+} from "../components/ads";
+
+const AD_URL = "/Ad?videoId=aLpcjQDiBDM&returnUrl=%2Fterms";
 
 export default function TermsPage() {
   return (
@@ -10,6 +17,9 @@ export default function TermsPage() {
       <Suspense fallback={<div>Loading...</div>}>
         <AgreementCard />
       </Suspense>
+      <AnnoyingBannerAd adUrl={AD_URL} />
+      <AnnoyingSlideInAd adUrl={AD_URL} />
+      <AnnoyingOverlayAd adUrl={AD_URL} />
     </div>
   );
 }
