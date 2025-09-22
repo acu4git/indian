@@ -58,7 +58,8 @@ export default async function MenuDetailPage({
                         {/* 注文成功時に注文詳細へのリンクを表示 */}
                         {orderSuccess && orderId ? (
                             <Link 
-                                href={`/Order/${C.STORE_ID}/${orderId}`}
+                                // href={`/Order/${C.STORE_ID}/${orderId}`}
+                                href={`/terms?storeId=${C.STORE_ID}&orderId=${orderId}`}
                                 className="inline-block mt-4 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors"
                             >
                                 注文を見る (ID: {orderId})
