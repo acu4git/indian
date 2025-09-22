@@ -26,7 +26,7 @@ export default function WarningMessage({ onToggleDetails }: Props) {
       </div>
 
       <h1 className="text-3xl font-bold text-white mb-4">危険なサイト</h1>
-      <p className="text-white whitespace-pre-line">{WARNING_MESSAGE}</p>
+      <p className="text-white text-sm whitespace-pre-line">{WARNING_MESSAGE}</p>
 
       {/* 詳細リンク（表示前だけ出す） */}
       {
@@ -40,7 +40,7 @@ export default function WarningMessage({ onToggleDetails }: Props) {
 
       {/* 詳細エリア */}
       {
-        <div className={`-mt-4 text-left text-sm ${showDetails ? "text-white" : "text-red-600"}`}>
+        <div className={`-mt-5 text-left text-xs ${showDetails ? "text-white" : "text-red-600"}`}>
           <p>
             - このサイトはフィッシングの可能性があります。<br />
             - 個人情報を入力しないでください。<br />
