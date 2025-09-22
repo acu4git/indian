@@ -52,20 +52,40 @@ export default function Home() {
   };
 
   useEffect(() => {
+    let touchStartY = 0;
+
     const handleWheel = (event: WheelEvent) => {
       setScrollY(prev => {
         const next = prev + event.deltaY;
-
-        // スクロール上限に達したら Start ボタン表示
-        setScrollEnded(MIN_SCROLL >= next && next >= MAX_SCROLL);
-
-        // scrollY は0未満にならない
+        setScrollEnded(next >= MAX_SCROLL && next <= MIN_SCROLL);
         return Math.max(next, 0);
       });
     };
 
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0].clientY;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const touchCurrentY = event.touches[0].clientY;
+      const delta = touchStartY - touchCurrentY; // 上にスワイプしたら delta > 0
+      setScrollY(prev => {
+        const next = prev + delta;
+        setScrollEnded(next >= MAX_SCROLL && next <= MIN_SCROLL);
+        return Math.max(next, 0);
+      });
+      touchStartY = touchCurrentY; // 更新
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: true });
-    return () => window.removeEventListener("wheel", handleWheel);
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false }); // preventDefault する場合 false
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+    };
   }, []);
 
   return (
