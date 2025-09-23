@@ -22,12 +22,12 @@ const CameraView = () => {
       for (const landmarks of results.faceLandmarks) {
         drawContext.drawConnectors(
           landmarks,
-          FaceLandmarker.FACE_LANDMARKS_TESSELATION
+          FaceLandmarker.FACE_LANDMARKS_LIPS
         );
-        drawContext.drawLandmarks(landmarks, {
-          color: "#00FF00",
-          lineWidth: 5,
-        });
+        // drawContext.drawLandmarks(landmarks, {
+        //   color: "#00FF00",
+        //   lineWidth: 5,
+        // });
       }
     }
   }, [results]);
@@ -41,21 +41,20 @@ const CameraView = () => {
   }
 
   return (
-    <div className="relative w-full h-screen max-w-2xl mx-auto">
+    <div className="flex flex-col items-center min-h-screen p-8 w-full justify-center">
+      <video
+        playsInline
+        ref={videoRef}
+        autoPlay
+        muted
+        className="fixed inset-0 z-10 transform -scale-x-100" // 左右反転
+      />
+      <button className="fixed top-25 left-25 z-50">完了</button>
       <canvas
         ref={canvasRef}
         width={640}
         height={480}
-        className="absolute top-0 left-0 z-10"
-      />
-      <video
-        playsInline
-        ref={videoRef}
-        width={640}
-        height={480}
-        autoPlay
-        muted
-        className="absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100" // 左右反転
+        className="fixed top-0 left-0 z-10 transform -scale-x-100"
       />
     </div>
   );
