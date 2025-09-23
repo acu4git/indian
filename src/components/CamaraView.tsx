@@ -4,19 +4,21 @@ import { useFaceLandmarker } from "@/hooks/useFaceLandmarker";
 import { DrawingUtils, FaceLandmarker } from "@mediapipe/tasks-vision";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import targetCurry from "./target_curry.png";
 
-const BUTTON_WIDTH = 60;
-const BUTTON_HEIGHT = 30;
+const IMG_WIDTH = 60;
+const IMG_HEIGHT = 60;
 const MOUTH_OPEN_THRESHOLD = 0.05; // 口が開いていると判定するしきい値
 
 const CameraView = () => {
   const { videoRef, results, isLoading, error } = useFaceLandmarker();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const [buttonPosition, setButtonPosition] = useState<{
+  const [targetPosition, setTargetPosition] = useState<{
     top: number;
     left: number;
   } | null>(null);
@@ -24,6 +26,7 @@ const CameraView = () => {
     width: number;
     height: number;
   } | null>(null);
+  const [isMatched, setIsMatched] = useState(false);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -34,18 +37,19 @@ const CameraView = () => {
 
   useEffect(() => {
     if (containerSize) {
-      const top = Math.random() * (containerSize.height - BUTTON_HEIGHT);
-      const left = Math.random() * (containerSize.width - BUTTON_WIDTH);
-      setButtonPosition({ top, left });
+      const top = Math.random() * (containerSize.height - IMG_HEIGHT);
+      const left = Math.random() * (containerSize.width - IMG_WIDTH);
+      setTargetPosition({ top, left });
     }
   }, [containerSize]);
 
   useEffect(() => {
     if (
       results?.faceLandmarks &&
-      buttonPosition &&
+      targetPosition &&
       containerSize &&
-      buttonRef.current
+      // buttonRef.current
+      imgRef.current
     ) {
       const landmarks = results.faceLandmarks[0];
       if (!landmarks) return;
@@ -80,10 +84,10 @@ const CameraView = () => {
           const minLipY = Math.min(...lipPointsY);
           const maxLipY = Math.max(...lipPointsY);
 
-          const buttonLeft = buttonRef.current.offsetLeft;
-          const buttonTop = buttonRef.current.offsetTop;
-          const buttonRight = buttonLeft + buttonRef.current.offsetWidth;
-          const buttonBottom = buttonTop + buttonRef.current.offsetHeight;
+          const buttonLeft = imgRef.current.offsetLeft;
+          const buttonTop = imgRef.current.offsetTop;
+          const buttonRight = buttonLeft + imgRef.current.offsetWidth;
+          const buttonBottom = buttonTop + imgRef.current.offsetHeight;
 
           // 衝突判定
           if (
@@ -92,12 +96,14 @@ const CameraView = () => {
             maxLipY > buttonTop &&
             minLipY < buttonBottom
           ) {
-            router.push("/");
+            // router.push("/");
+            // return;
+            setIsMatched(true);
           }
         }
       }
     }
-  }, [results, buttonPosition, containerSize, router]);
+  }, [results, targetPosition, containerSize, router]);
 
   useEffect(() => {
     if (canvasRef.current && results?.faceLandmarks) {
@@ -128,6 +134,15 @@ const CameraView = () => {
     return <div className="text-center p-4">preparing camera...</div>;
   }
 
+  if (isMatched) {
+    if (videoRef.current?.srcObject) {
+      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+      tracks.forEach((track: MediaStreamTrack) => track.stop());
+    }
+    router.push("/");
+    return;
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen p-8 w-full justify-center">
       <div className="fixed top-5 left-5 p-5 bg-gray-300 rounded-lg">
@@ -153,19 +168,30 @@ const CameraView = () => {
           height={480}
           className="absolute top-0 left-0 w-full h-full transform -scale-x-100"
         />
-        {buttonPosition && (
-          <button
-            ref={buttonRef}
-            className="absolute z-20 bg-white p-2 rounded"
+        {targetPosition && (
+          <img
+            ref={imgRef}
+            src={targetCurry.src}
+            className="absolute z-20"
             style={{
-              top: `${buttonPosition.top}px`,
-              left: `${buttonPosition.left}px`,
-              width: `${BUTTON_WIDTH}px`,
-              height: `${BUTTON_HEIGHT}px`,
+              top: `${targetPosition.top}px`,
+              left: `${targetPosition.left}px`,
+              width: `${IMG_WIDTH}px`,
+              height: `${IMG_HEIGHT}px`,
             }}
-          >
-            完了
-          </button>
+          />
+          // <button
+          //   ref={buttonRef}
+          //   className="absolute z-20 bg-white p-2 rounded"
+          //   style={{
+          //     top: `${targetPosition.top}px`,
+          //     left: `${targetPosition.left}px`,
+          //     width: `${IMG_WIDTH}px`,
+          //     height: `${IMG_HEIGHT}px`,
+          //   }}
+          // >
+          //   完了
+          // </button>
         )}
       </div>
     </div>
