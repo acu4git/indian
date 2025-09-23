@@ -27,13 +27,13 @@ export const AppStore = ({ showAd, closeAd }: appStoreProps) => {
                 
                 {/* タイトルとサブタイトル */}
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-white mb-1">Amazon Music: 音楽やポッドキャスト</h3>
-                  <p className="text-gray-400 text-sm">1億曲が聴き放題</p>
+                  <h3 className="text-xl font-semibold text-white mb-1">Shari Carry: 次世代の音ゲー</h3>
+                  <p className="text-gray-400 text-sm">ノーツと共に日常にスパイスと新鮮さを叩き込め！</p>
                 </div>
                 
                 {/* 入手ボタン */}
                 <button className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium ml-4">
-                  入手
+                  人手
                 </button>
                 
                 {/* シェアボタン */}
@@ -48,33 +48,33 @@ export const AppStore = ({ showAd, closeAd }: appStoreProps) => {
               <div className="flex justify-between items-center mb-6">
                 <div className="text-center">
                   <p className="text-gray-400 text-xs mb-1">132万件の評価</p>
-                  <p className="text-2xl font-bold">4.3</p>
+                  <p className="text-2xl font-bold">0.3</p>
                   <div className="flex text-yellow-400 text-sm">
-                    ★★★★☆
+                    ★☆☆☆☆
                   </div>
                 </div>
                 <div className="text-center">
                   <p className="text-gray-400 text-xs mb-1">年齢</p>
-                  <p className="text-2xl font-bold">12+</p>
+                  <p className="text-2xl font-bold">0+</p>
                   <p className="text-gray-400 text-xs">歳</p>
                 </div>
                 <div className="text-center">
                   <p className="text-gray-400 text-xs mb-1">ランキング</p>
-                  <p className="text-2xl font-bold">#3</p>
-                  <p className="text-gray-400 text-xs">ミュージック</p>
+                  <p className="text-2xl font-bold">#1</p>
+                  <p className="text-gray-400 text-xs">フード</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-gray-400 text-xs mb-1">デベ</p>
-                  <p className="text-lg font-bold">🅰️</p>
-                  <p className="text-gray-400 text-xs">AMZN M</p>
+                  <p className="text-gray-400 text-xs mb-1">デベロッパー</p>
+                  <p className="text-lg font-bold">S</p>
+                  <p className="text-gray-400 text-xs">SHR CRR</p>
                 </div>
               </div>
               
               {/* 特徴説明部分 */}
               <div className="flex space-x-4 mb-4">
                 <div className="bg-teal-400 rounded-xl p-4 flex-1">
-                  <p className="text-black font-semibold text-sm mb-2">オーディオブックが</p>
-                  <p className="text-black font-semibold text-sm">毎月1冊聴けるようになりました</p>
+                  <p className="text-black font-semibold text-sm mb-2">ノーツをとにかく叩いて</p>
+                  <p className="text-black font-semibold text-sm">コンボと命を繋げ！</p>
                   
                   {/* 黒い四角（画像の代替） */}
                   <div className="w-full h-32 bg-black rounded-lg mt-3">
@@ -82,8 +82,8 @@ export const AppStore = ({ showAd, closeAd }: appStoreProps) => {
                   </div>
                 </div>
                 <div className="bg-gray-800 rounded-xl p-4 flex-1">
-                  <p className="text-white font-semibold text-sm mb-2">1億曲以上が</p>
-                  <p className="text-white font-semibold text-sm">広告なしで聴き放題</p>
+                  <p className="text-white font-semibold text-sm mb-2">色付きのノーツを叩いたら</p>
+                  <p className="text-white font-semibold text-sm">その味を楽しむしかない！</p>
                   
                   {/* 黒い四角（画像の代替） */}
                   <div className="w-full h-32 bg-black rounded-lg mt-3">
