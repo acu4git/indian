@@ -5,8 +5,25 @@ type appStoreProps = {
 
 export const AppStore = ({ showAd, closeAd }: appStoreProps) => {
     return (
-          <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-end transition-transform duration-500 ${showAd ? 'translate-y-0' : 'translate-y-full'}`}>
-            <div className="w-full bg-gray-900 text-white rounded-t-2xl p-6 shadow-2xl transform transition-transform duration-500">
+          <div 
+            className={`fixed inset-0 bg-black bg-opacity-50 flex items-end transition-transform duration-500 ${showAd ? 'translate-y-0' : 'translate-y-full'}`}
+            style={{
+              height: '100dvh', // 動的ビューポート高さ（モダンブラウザ用）
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 9999
+            }}
+          >
+            <div 
+              className="w-full bg-gray-900 text-white rounded-t-2xl p-6 shadow-2xl transform transition-transform duration-500"
+              style={{
+                maxHeight: '80dvh', // 動的ビューポート高さ（モダンブラウザ用）
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch' // iOS用のスムーズスクロール
+              }}
+            >
               {/* 完了ボタン */}
               <div className="flex justify-end mb-4">
                 <button 
