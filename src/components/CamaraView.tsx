@@ -139,6 +139,7 @@ const CameraView = () => {
       const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
       tracks.forEach((track: MediaStreamTrack) => track.stop());
     }
+    alert("何してんの？");
     router.push("/MusicGame");
     return;
   }
@@ -147,17 +148,17 @@ const CameraView = () => {
     <div className="flex flex-col items-center min-h-screen p-8 w-full justify-center">
       <div className="fixed top-5 left-5 p-5 bg-gray-300 rounded-lg">
         <p className="font-extrabold text-3xl">本人確認</p>
-        <p>
-          口を開いて<a>完了</a>ボタンを口の中に入れてください
-        </p>
+        <p>口を大きく開いてカレーを食べてください．</p>
       </div>
       <div
         ref={containerRef}
-        className="relative w-full max-w-3xl aspect-video"
+        className="relative w-full max-w-7xl aspect-video"
       >
         <video
           playsInline
           ref={videoRef}
+          height={480}
+          width={640}
           autoPlay
           muted
           className="absolute top-0 left-0 w-full h-full transform -scale-x-100"
