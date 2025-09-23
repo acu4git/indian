@@ -68,7 +68,7 @@ export default function Home() {
 
     const handleTouchMove = (event: TouchEvent) => {
       const touchCurrentY = event.touches[0].clientY;
-      const delta = touchStartY - touchCurrentY; // 上にスワイプしたら delta > 0
+      const delta = touchCurrentY - touchStartY; // 下にスワイプしたら delta > 0
       setScrollY(prev => {
         const next = prev + delta;
         setScrollEnded(next >= MAX_SCROLL && next <= MIN_SCROLL);
