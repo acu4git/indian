@@ -9,6 +9,7 @@ export const AppStore = ({ showAd, closeAd }: appStoreProps) => {
             className={`fixed inset-0 bg-black bg-opacity-50 flex items-end transition-transform duration-500 ${showAd ? 'translate-y-0' : 'translate-y-full'}`}
             style={{
               width: '100dvw', // 動的ビューポート高さ（モダンブラウザ用）
+              height: '100dvh', // 動的ビューポート高さ（モダンブラウザ用）
               top: 0,
               bottom: 0,
               left: 0,
