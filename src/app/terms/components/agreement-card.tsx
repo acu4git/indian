@@ -1,13 +1,17 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function AgreementCard() {
   // 利用規約：実は同意しなくても進める
   // 私は人間ではありません：逆に同意すると進めない
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get("storeId") || "abc";
+  const orderId = searchParams.get("orderId") || "1";
+
   const [isNotHumanChecked, setIsNotHumanChecked] = useState(false);
   const [isAgreementChecked, setIsAgreementChecked] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -17,7 +21,7 @@ export default function AgreementCard() {
       setShowAlert(true);
     } else {
       window.open("/quiz", "_blank", "noopener,noreferrer");
-      router.push("/Order/abc/1");
+      router.push(`/Order/${storeId}/${orderId}`);
     }
   };
 
@@ -25,7 +29,7 @@ export default function AgreementCard() {
     if (isNotHumanChecked) {
       setShowAlert(true);
     } else {
-      router.push("/Order/abc/1");
+      router.push(`/Order/${storeId}/${orderId}`);
     }
   };
 
@@ -92,7 +96,7 @@ export default function AgreementCard() {
                 !isNotHumanChecked || !isAgreementChecked,
             })}
           >
-            同意する
+            同意します
           </button>
           <button
             // TODO: storeId, orderIdを動的に変更する

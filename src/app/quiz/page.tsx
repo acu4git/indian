@@ -6,13 +6,29 @@ import AnxietyTimer from "./components/anxiety-timer";
 import DeceptiveAdButton from "./components/deceptive-ad";
 
 const QUESTIONS = [
-  "えーと、利用者はSNSで猫の画像を見かけたら、あ、3秒以内に「いいね」をしなければならないですか？",
-  "カレー味のかき氷を注文しますか？",
+  "利用者はSNSで猫の画像を見かけたら、3秒以内に「いいね」をしなければならないですか？",
+  "利用者は毎日1回、ランダムな人に「こんにちは」と挨拶しなければならないですか？",
+  "利用者は週に一度、近所の公園でラジオ体操をしなければならないですか？",
+  "利用者は月に一度、見知らぬ人に「ありがとう」と感謝の言葉を伝えなければならないですか？",
+  "利用者は毎朝、鏡の前で自分に向かって「今日も素晴らしい一日になる」と言わなければならないですか？",
+  "利用者は毎晩、寝る前に今日あった良いことを3つ思い出さなければならないですか？",
+  "利用者は週に一度、家族や友人に手紙を書いて感謝の気持ちを伝えなければならないですか？",
+  "利用者は毎日、少なくとも5分間瞑想をしなければならないですか？",
+  "利用者は月に一度、ボランティア活動に参加しなければならないですか？",
+  "利用者は毎週、少なくとも1回新しいレシピを試して料理をしなければならないですか？",
 ];
 
 export default function QuizPage() {
   const [index, setIndex] = useState(0);
   const currentQuestion = QUESTIONS[index];
+
+  const handleClick = () => {
+    if (index < QUESTIONS.length - 1) {
+      setIndex(index + 1);
+    } else {
+      alert("クイズ終了！お疲れ様でした！");
+    }
+  };
 
   return (
     <div className="flex flex-col w-dvw">
@@ -20,8 +36,8 @@ export default function QuizPage() {
         {["はい", "いいえ"].map((option) => (
           <button
             key={option}
-            className="mx-auto  rounded-full bg-amber-300  text-xl font-semibold text-white shadow-md transition hover:bg-amber-500 active:scale-95"
-            onClick={() => setIndex((prev) => (prev + 1) % QUESTIONS.length)}
+            className="mx-auto rounded-full bg-amber-300 text-xl font-semibold text-white shadow-md transition hover:bg-amber-500 active:scale-95"
+            onClick={handleClick}
           >
             {option}
           </button>

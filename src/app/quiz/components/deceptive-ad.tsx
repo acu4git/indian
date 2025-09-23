@@ -8,7 +8,7 @@ interface DeceptiveAdButtonProps {
 
 export default function DeceptiveAdButton({
   text,
-  adUrl = "/Ad?videoId=aLpcjQDiBDM&returnUrl=%2quiz",
+  adUrl = "/Ad?videoId=aLpcjQDiBDM&returnUrl=%2Fquiz",
 }: DeceptiveAdButtonProps) {
   return (
     <Link

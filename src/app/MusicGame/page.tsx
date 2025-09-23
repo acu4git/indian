@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 // 定数をまとめてインポート
 import * as C from './consts';
-import { CurryAd } from '@/app/Ad/components/curryAd';
-import { Result } from './components/result';
 import { Feedback } from './components/feedback';
+import { AppStore } from './components/appStore';
+import { AdModal } from './components/adModal';
 
 export default function MusicGamePage() {
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
@@ -19,12 +19,17 @@ export default function MusicGamePage() {
   const hitSoundRef = useRef<HTMLAudioElement | null>(null);
   // --- ▲ここまで追加 ▲ ---
 
+  // --- ▼広告表示用の状態追加 ▼ ---
+  const [showAd, setShowAd] = useState(false);
+  const adTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // --- ▲広告表示用の状態追加 ▲ ---
+
   // ゲーム状態（UIに反映が必要なもの）
   const [isPlaying, setIsPlaying] = useState(false);
   const [comboCount, setComboCount] = useState(0);
   const [maxComboCount, setMaxComboCount] = useState(0);
   const [judgeResult, setJudgeResult] = useState('');
-  const [showFinalResult, setShowFinalResult] = useState(false);
+  const [showGameEndModal, setShowGameEndModal] = useState(false);
 
   // 判定結果のカウント（動的に生成）
   const [judgeCounts, setJudgeCounts] = useState<Record<string, number>>(() =>
@@ -139,16 +144,29 @@ export default function MusicGamePage() {
     gameLoopRef.current = requestAnimationFrame(gameLoop);
   }, [clearCanvas, drawLanes, drawBlocks]);
 
+  // --- ▼広告を閉じる処理追加 ▼ ---
+  const closeAd = useCallback(() => {
+    setShowAd(false);
+  }, []);
+  // --- ▲広告を閉じる処理追加 ▲ ---
+
   // ゲーム開始
   const gameStart = useCallback(() => {
     if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
     
+    // --- ▼広告タイマーのクリア追加 ▼ ---
+    if (adTimerRef.current) {
+      clearTimeout(adTimerRef.current);
+    }
+    setShowAd(false);
+    setShowGameEndModal(false);
+    // --- ▲広告タイマーのクリア追加 ▲ ---
+
     blocksRef.current = [];
     setJudgeCounts(Object.keys(C.JUDGE_TYPES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}));
     setComboCount(0);
     setMaxComboCount(0);
     setJudgeResult('');
-    setShowFinalResult(false);
     setIsPlaying(true);
     
     const baseSpeed = (60 * C.PLAY_TIME_SECONDS) / C.TOTAL_NOTES;
@@ -163,11 +181,17 @@ export default function MusicGamePage() {
 
     gameLoopRef.current = requestAnimationFrame(gameLoop);
 
+    // --- ▼5秒後に広告表示するタイマー追加 ▼ ---
+    adTimerRef.current = setTimeout(() => {
+      setShowAd(true);
+    }, 5000);
+    // --- ▲5秒後に広告表示するタイマー追加 ▲ ---
+
     setTimeout(() => {
       setIsPlaying(false);
       if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
       gameLoopRef.current = null;
-      setShowFinalResult(true);
+      setShowGameEndModal(true);
     }, 1000 * C.PLAY_TIME_SECONDS + 2000);
   }, [gameLoop]); // C定数を依存配列から削除
   
@@ -239,15 +263,15 @@ export default function MusicGamePage() {
     };
   }, [isPlaying, getTouchLane, onLaneHit]);
 
+  // --- ▼クリーンアップ処理に広告タイマークリア追加 ▼ ---
   // クリーンアップ
   useEffect(() => {
-    return () => { if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current); };
+    return () => { 
+      if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
+      if (adTimerRef.current) clearTimeout(adTimerRef.current);
+    };
   }, []);
-
-  // 結果テキストを動的生成
-  const finalResultText = Object.entries(judgeCounts)
-    .map(([key, count]) => `${C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].name}: ${count}`)
-    .join('\n    ') + `\n    MAXCOMBO: ${maxComboCount}`;
+  // --- ▲クリーンアップ処理に広告タイマークリア追加 ▲ ---
 
   return (
     <div className={`min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 ${isPlaying ? 'cursor-none' : ''}`}>
@@ -262,7 +286,6 @@ export default function MusicGamePage() {
 
         {isPlaying && (
             <div>
-              <CurryAd isPlaying={isPlaying}  left={C.DEFAULT_LEFT-220} top={C.BUTTONS_TOP} />
               <Feedback comboCount={comboCount} judgeResult={judgeResult} />
             </div>
         )}
@@ -279,9 +302,16 @@ export default function MusicGamePage() {
           </div>
         )}
 
-        {showFinalResult && (
-            <Result finalResult={finalResultText} onPlayAgain={gameStart} />
+        {/* ゲーム終了モーダル */}
+        {showGameEndModal && (
+          <AdModal/>
         )}
+
+        {/* --- ▼広告UI追加 ▼ --- */}
+        {showAd && (
+          <AppStore showAd={showAd} closeAd={closeAd} />
+        )}
+        {/* --- ▲広告UI追加 ▲ --- */}
       </div>
     </div>
   );
