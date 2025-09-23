@@ -6,8 +6,8 @@ import * as THREE from "three";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const MIN_SCROLL = 1950;//Startボタンが出現する終了位置
-const MAX_SCROLL = 1850;//Startボタンが出現する開始位置
+const MIN_SCROLL = 1950; //Startボタンが出現する終了位置
+const MAX_SCROLL = 1850; //Startボタンが出現する開始位置
 
 function MovingCamera({ scrollY }: { scrollY: number }) {
   const { camera } = useThree();
@@ -27,7 +27,7 @@ function BackgroundPlane() {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
-    new THREE.TextureLoader().load("regi_guide.jpg", (tex) => {
+    new THREE.TextureLoader().load("indian.png", (tex) => {
       setTexture(tex);
     });
   }, []);
@@ -55,7 +55,7 @@ export default function Home() {
     let touchStartY = 0;
 
     const handleWheel = (event: WheelEvent) => {
-      setScrollY(prev => {
+      setScrollY((prev) => {
         const next = prev + event.deltaY;
         setScrollEnded(next >= MAX_SCROLL && next <= MIN_SCROLL);
         return Math.max(next, 0);
@@ -69,7 +69,7 @@ export default function Home() {
     const handleTouchMove = (event: TouchEvent) => {
       const touchCurrentY = event.touches[0].clientY;
       const delta = touchCurrentY - touchStartY; // 下にスワイプしたら delta > 0
-      setScrollY(prev => {
+      setScrollY((prev) => {
         const next = prev + delta;
         setScrollEnded(next >= MAX_SCROLL && next <= MIN_SCROLL);
         return Math.max(next, 0);
@@ -90,7 +90,10 @@ export default function Home() {
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
-      <Canvas camera={{ position: [0, 0, 1], fov: 50 }} className="fixed top-0 left-0 w-full h-full">
+      <Canvas
+        camera={{ position: [0, 0, 1], fov: 50 }}
+        className="fixed top-0 left-0 w-full h-full"
+      >
         <ambientLight intensity={0.7} />
         <directionalLight position={[10, 10, 5]} />
 
