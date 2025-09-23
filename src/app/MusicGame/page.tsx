@@ -2,10 +2,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 // 定数をまとめてインポート
 import * as C from './consts';
-import { Result } from './components/result';
 import { Feedback } from './components/feedback';
 import { AppStore } from './components/appStore';
-import Link from 'next/link';
+import { AdModal } from './components/adModal';
 
 export default function MusicGamePage() {
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
@@ -22,7 +21,6 @@ export default function MusicGamePage() {
 
   // --- ▼広告表示用の状態追加 ▼ ---
   const [showAd, setShowAd] = useState(false);
-  const [closeGame, setcloseGame] = useState(false);
   const adTimerRef = useRef<NodeJS.Timeout | null>(null);
   // --- ▲広告表示用の状態追加 ▲ ---
 
@@ -31,7 +29,7 @@ export default function MusicGamePage() {
   const [comboCount, setComboCount] = useState(0);
   const [maxComboCount, setMaxComboCount] = useState(0);
   const [judgeResult, setJudgeResult] = useState('');
-  const [showFinalResult, setShowFinalResult] = useState(false);
+  const [showGameEndModal, setShowGameEndModal] = useState(false);
 
   // 判定結果のカウント（動的に生成）
   const [judgeCounts, setJudgeCounts] = useState<Record<string, number>>(() =>
@@ -161,7 +159,7 @@ export default function MusicGamePage() {
       clearTimeout(adTimerRef.current);
     }
     setShowAd(false);
-    setcloseGame(false);
+    setShowGameEndModal(false);
     // --- ▲広告タイマーのクリア追加 ▲ ---
 
     blocksRef.current = [];
@@ -169,7 +167,6 @@ export default function MusicGamePage() {
     setComboCount(0);
     setMaxComboCount(0);
     setJudgeResult('');
-    setShowFinalResult(false);
     setIsPlaying(true);
     
     const baseSpeed = (60 * C.PLAY_TIME_SECONDS) / C.TOTAL_NOTES;
@@ -187,7 +184,6 @@ export default function MusicGamePage() {
     // --- ▼5秒後に広告表示するタイマー追加 ▼ ---
     adTimerRef.current = setTimeout(() => {
       setShowAd(true);
-      setcloseGame(true);
     }, 5000);
     // --- ▲5秒後に広告表示するタイマー追加 ▲ ---
 
@@ -195,7 +191,7 @@ export default function MusicGamePage() {
       setIsPlaying(false);
       if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
       gameLoopRef.current = null;
-      setShowFinalResult(true);
+      setShowGameEndModal(true);
     }, 1000 * C.PLAY_TIME_SECONDS + 2000);
   }, [gameLoop]); // C定数を依存配列から削除
   
@@ -277,11 +273,6 @@ export default function MusicGamePage() {
   }, []);
   // --- ▲クリーンアップ処理に広告タイマークリア追加 ▲ ---
 
-  // 結果テキストを動的生成
-  const finalResultText = Object.entries(judgeCounts)
-    .map(([key, count]) => `${C.JUDGE_TYPES[key as keyof typeof C.JUDGE_TYPES].name}: ${count}`)
-    .join('\n    ') + `\n    MAXCOMBO: ${maxComboCount}`;
-
   return (
     <div className={`min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 ${isPlaying ? 'cursor-none' : ''}`}>
       <div className="relative">
@@ -311,8 +302,9 @@ export default function MusicGamePage() {
           </div>
         )}
 
-        {showFinalResult && (
-            <Result finalResult={finalResultText} onPlayAgain={gameStart} />
+        {/* ゲーム終了モーダル */}
+        {showGameEndModal && (
+          <AdModal/>
         )}
 
         {/* --- ▼広告UI追加 ▼ --- */}
@@ -320,18 +312,6 @@ export default function MusicGamePage() {
           <AppStore showAd={showAd} closeAd={closeAd} />
         )}
         {/* --- ▲広告UI追加 ▲ --- */}
-
-        {
-          closeGame && !showAd && (
-            <div className="absolute text-4xl font-mono text-white" style={{ left: `${C.DEFAULT_LEFT + C.LANE_WIDTH-20}px`, top: `${C.CANVAS_HEIGHT / 2+20}px`, transform: 'translateY(-50%)' }}>
-                <Link 
-                  href={`/FlavorGame`}
-                >
-                  ×
-                </Link>
-            </div>
-          )
-        }
       </div>
     </div>
   );
