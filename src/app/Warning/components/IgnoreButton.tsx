@@ -6,7 +6,7 @@ export default function IgnoreButton() {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/FlavorGame"); // FlavorGame に遷移
+    router.push("/auth/face"); // auth/face に遷移
   };
 
   return (

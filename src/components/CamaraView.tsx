@@ -139,7 +139,7 @@ const CameraView = () => {
       const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
       tracks.forEach((track: MediaStreamTrack) => track.stop());
     }
-    router.push("/");
+    router.push("/MusicGame");
     return;
   }
 
