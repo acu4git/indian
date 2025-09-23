@@ -12,7 +12,7 @@ export default function BackButton() {
   return (
     <button
       onClick={handleClick}
-      className="rounded-lg bg-red-600 px-4 py-2 text-white font-semibold opacity-80 hover:opacity-100 transition-opacity"
+      className="block w-full rounded-lg bg-white border border-red-600 px-4 py-2 text-blue-500 font-semibold cursor-pointer"
     >
       セキュリティで保護されたページに戻る
     </button>
