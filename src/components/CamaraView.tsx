@@ -2,13 +2,103 @@
 
 import { useFaceLandmarker } from "@/hooks/useFaceLandmarker";
 import { DrawingUtils, FaceLandmarker } from "@mediapipe/tasks-vision";
-import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+const BUTTON_WIDTH = 60;
+const BUTTON_HEIGHT = 30;
+const MOUTH_OPEN_THRESHOLD = 0.05; // 口が開いていると判定するしきい値
 
 const CameraView = () => {
   const { videoRef, results, isLoading, error } = useFaceLandmarker();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
-  // 検出結果が変わるたびにcanvasに描画する
+  const [buttonPosition, setButtonPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const [containerSize, setContainerSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setContainerSize({ width: rect.width, height: rect.height });
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (containerSize) {
+      const top = Math.random() * (containerSize.height - BUTTON_HEIGHT);
+      const left = Math.random() * (containerSize.width - BUTTON_WIDTH);
+      setButtonPosition({ top, left });
+    }
+  }, [containerSize]);
+
+  useEffect(() => {
+    if (
+      results?.faceLandmarks &&
+      buttonPosition &&
+      containerSize &&
+      buttonRef.current
+    ) {
+      const landmarks = results.faceLandmarks[0];
+      if (!landmarks) return;
+
+      // 上唇と下唇の中心あたりのランドマーク
+      const upperLip = landmarks[13];
+      const lowerLip = landmarks[14];
+      const lipDistance = Math.abs(upperLip.y - lowerLip.y);
+
+      // 口が開いているか判定
+      if (lipDistance > MOUTH_OPEN_THRESHOLD) {
+        // console.log("mouth opening");
+        const lipsLandmarks = landmarks.filter((_, index) =>
+          FaceLandmarker.FACE_LANDMARKS_LIPS.flatMap((range) => {
+            const indices = [];
+            for (let i = range.start; i <= range.end; i++) {
+              indices.push(i);
+            }
+            return indices;
+          }).includes(index)
+        );
+
+        if (lipsLandmarks.length > 0) {
+          const lipPointsX = lipsLandmarks.map(
+            (lm) => (1 - lm.x) * containerSize.width
+          );
+          const lipPointsY = lipsLandmarks.map(
+            (lm) => lm.y * containerSize.height
+          );
+          const minLipX = Math.min(...lipPointsX);
+          const maxLipX = Math.max(...lipPointsX);
+          const minLipY = Math.min(...lipPointsY);
+          const maxLipY = Math.max(...lipPointsY);
+
+          const buttonLeft = buttonRef.current.offsetLeft;
+          const buttonTop = buttonRef.current.offsetTop;
+          const buttonRight = buttonLeft + buttonRef.current.offsetWidth;
+          const buttonBottom = buttonTop + buttonRef.current.offsetHeight;
+
+          // 衝突判定
+          if (
+            maxLipX > buttonLeft &&
+            minLipX < buttonRight &&
+            maxLipY > buttonTop &&
+            minLipY < buttonBottom
+          ) {
+            router.push("/");
+          }
+        }
+      }
+    }
+  }, [results, buttonPosition, containerSize, router]);
+
   useEffect(() => {
     if (canvasRef.current && results?.faceLandmarks) {
       const canvas = canvasRef.current;
@@ -18,16 +108,14 @@ const CameraView = () => {
 
       const drawContext = new DrawingUtils(ctx);
 
-      // 検出された各顔のランドマークを描画
       for (const landmarks of results.faceLandmarks) {
         drawContext.drawConnectors(
           landmarks,
-          FaceLandmarker.FACE_LANDMARKS_LIPS
+          FaceLandmarker.FACE_LANDMARKS_LIPS,
+          {
+            color: "red",
+          }
         );
-        // drawContext.drawLandmarks(landmarks, {
-        //   color: "#00FF00",
-        //   lineWidth: 5,
-        // });
       }
     }
   }, [results]);
@@ -42,20 +130,44 @@ const CameraView = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen p-8 w-full justify-center">
-      <video
-        playsInline
-        ref={videoRef}
-        autoPlay
-        muted
-        className="fixed inset-0 z-10 transform -scale-x-100" // 左右反転
-      />
-      <button className="fixed top-25 left-25 z-50">完了</button>
-      <canvas
-        ref={canvasRef}
-        width={640}
-        height={480}
-        className="fixed top-0 left-0 z-10 transform -scale-x-100"
-      />
+      <div className="fixed top-5 left-5 p-5 bg-gray-300 rounded-lg">
+        <p className="font-extrabold text-3xl">本人確認</p>
+        <p>
+          口を開いて<a>完了</a>ボタンを口の中に入れてください
+        </p>
+      </div>
+      <div
+        ref={containerRef}
+        className="relative w-full max-w-3xl aspect-video"
+      >
+        <video
+          playsInline
+          ref={videoRef}
+          autoPlay
+          muted
+          className="absolute top-0 left-0 w-full h-full transform -scale-x-100"
+        />
+        <canvas
+          ref={canvasRef}
+          width={640}
+          height={480}
+          className="absolute top-0 left-0 w-full h-full transform -scale-x-100"
+        />
+        {buttonPosition && (
+          <button
+            ref={buttonRef}
+            className="absolute z-20 bg-white p-2 rounded"
+            style={{
+              top: `${buttonPosition.top}px`,
+              left: `${buttonPosition.left}px`,
+              width: `${BUTTON_WIDTH}px`,
+              height: `${BUTTON_HEIGHT}px`,
+            }}
+          >
+            完了
+          </button>
+        )}
+      </div>
     </div>
   );
 };
