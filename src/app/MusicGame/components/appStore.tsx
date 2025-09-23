@@ -1,3 +1,4 @@
+import Image from "next/image";
 type appStoreProps = {
     showAd: boolean;
     closeAd: () => void;
@@ -39,7 +40,7 @@ export const AppStore = ({ showAd, closeAd }: appStoreProps) => {
                 {/* アプリアイコン（黒い四角で代替） */}
                 <div className="w-16 h-16 bg-black rounded-2xl mr-4 flex-shrink-0">
                   {/* ここに実際の画像を入れる場合は以下のように */}
-                  {/* <img src="/app-icon.png" alt="App Icon" className="w-full h-full rounded-2xl" /> */}
+                  <Image src="/game2.png" alt="App Icon" width={64} height={64} />
                 </div>
                 
                 {/* タイトルとサブタイトル */}
@@ -93,18 +94,30 @@ export const AppStore = ({ showAd, closeAd }: appStoreProps) => {
                   <p className="text-black font-semibold text-sm mb-2">ノーツをとにかく叩いて</p>
                   <p className="text-black font-semibold text-sm">コンボと命を繋げ！</p>
                   
-                  {/* 黒い四角（画像の代替） */}
-                  <div className="w-full h-32 bg-black rounded-lg mt-3">
-                    {/* ここにスクリーンショット画像を入れる場合 */}
+                  {/* 画像コンテナ */}
+                  <div className="w-full h-32 bg-black rounded-lg mt-3 overflow-hidden flex items-center justify-center">
+                    <Image 
+                      src="/game2.png" 
+                      alt="Game Screenshot" 
+                      width={200} 
+                      height={128} 
+                      className="object-cover w-full h-full rounded-lg"
+                    />
                   </div>
                 </div>
                 <div className="bg-gray-800 rounded-xl p-4 flex-1">
                   <p className="text-white font-semibold text-sm mb-2">色付きのノーツを叩いたら</p>
                   <p className="text-white font-semibold text-sm">その味を楽しむしかない！</p>
                   
-                  {/* 黒い四角（画像の代替） */}
-                  <div className="w-full h-32 bg-black rounded-lg mt-3">
-                    {/* ここにスクリーンショット画像を入れる場合 */}
+                  {/* 画像コンテナ */}
+                  <div className="w-full h-32 bg-black rounded-lg mt-3 overflow-hidden flex items-center justify-center">
+                    <Image 
+                      src="/game2.png" 
+                      alt="Game Screenshot" 
+                      width={200} 
+                      height={128} 
+                      className="object-cover w-full h-full rounded-lg"
+                    />
                   </div>
                 </div>
               </div>
