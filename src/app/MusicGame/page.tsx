@@ -5,6 +5,7 @@ import * as C from './consts';
 import { Result } from './components/result';
 import { Feedback } from './components/feedback';
 import { AppStore } from './components/appStore';
+import Link from 'next/link';
 
 export default function MusicGamePage() {
   // 音ゲーの描画による再レンダリングを避けるため、useRefで状態を管理
@@ -21,6 +22,7 @@ export default function MusicGamePage() {
 
   // --- ▼広告表示用の状態追加 ▼ ---
   const [showAd, setShowAd] = useState(false);
+  const [closeGame, setcloseGame] = useState(false);
   const adTimerRef = useRef<NodeJS.Timeout | null>(null);
   // --- ▲広告表示用の状態追加 ▲ ---
 
@@ -159,6 +161,7 @@ export default function MusicGamePage() {
       clearTimeout(adTimerRef.current);
     }
     setShowAd(false);
+    setcloseGame(false);
     // --- ▲広告タイマーのクリア追加 ▲ ---
 
     blocksRef.current = [];
@@ -184,6 +187,7 @@ export default function MusicGamePage() {
     // --- ▼5秒後に広告表示するタイマー追加 ▼ ---
     adTimerRef.current = setTimeout(() => {
       setShowAd(true);
+      setcloseGame(true);
     }, 5000);
     // --- ▲5秒後に広告表示するタイマー追加 ▲ ---
 
@@ -316,6 +320,18 @@ export default function MusicGamePage() {
           <AppStore showAd={showAd} closeAd={closeAd} />
         )}
         {/* --- ▲広告UI追加 ▲ --- */}
+
+        {
+          closeGame && !showAd && (
+            <div className="absolute text-4xl font-mono text-white" style={{ left: `${C.DEFAULT_LEFT + C.LANE_WIDTH-20}px`, top: `${C.CANVAS_HEIGHT / 2+20}px`, transform: 'translateY(-50%)' }}>
+                <Link 
+                  href={`/FlavorGame`}
+                >
+                  ×
+                </Link>
+            </div>
+          )
+        }
       </div>
     </div>
   );
