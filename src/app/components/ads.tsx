@@ -23,7 +23,7 @@ export function AnnoyingBannerAd({ adUrl }: { adUrl: string }) {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full animate-fade-up bg-yellow-200 text-center text-black">
+    <div className="fixed bottom-0 left-0 z-50 w-full animate-fade-up bg-yellow-200 text-center text-black overflow-scroll overscroll-contain">
       <div className="relative w-full h-20">
         <Link
           href={adUrl}
@@ -43,14 +43,21 @@ export function AnnoyingBannerAd({ adUrl }: { adUrl: string }) {
             かき氷カレー味再来！
           </p>
 
-          {/* 閉じるボタン (非常に小さく、押しにくい) */}
+          {/* 閉じるボタン（ダミー） */}
           <button
-            className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-gray-600 text-xs font-bold text-white transition-transform hover:scale-110 active:scale-90"
+            className="absolute -top-2 right-0 h-5 w-5 rounded-full bg-gray-600 text-xs font-bold text-white transition-transform hover:scale-110 active:scale-90"
             aria-label="広告を閉じる"
           >
             X
           </button>
+          <button
+            className="absolute -top-2 right-12 h-5 w-5 rounded-full bg-gray-600 text-xs font-bold text-white transition-transform hover:scale-110 active:scale-90"
+            aria-label="広告を閉じる"
+          >
+            △
+          </button>
         </Link>
+        {/* 閉じるボタン（本物） */}
         <button
           onClick={handleClose}
           className="absolute -top-2 right-6 h-5 w-5 rounded-full bg-gray-600 text-xs font-bold text-white transition-transform hover:scale-110 active:scale-90"
@@ -81,11 +88,11 @@ export function AnnoyingSlideInAd({ adUrl }: { adUrl: string }) {
   return (
     <div
       className={cn(
-        "fixed bottom-12 left-0 z-50 w-full duration-[30000ms] rounded-lg bg-yellow-500 text-black shadow-2xl",
-        isVisible ? "translate-y-0 opacity-100" : "-translate-y-80 opacity-0"
+        "fixed bottom-12 left-0 z-50 w-full h-30 duration-[30000ms] rounded-lg bg-yellow-500 text-black shadow-2xl overflow-scroll overscroll-contain",
+        isVisible ? "translate-y-0 opacity-100" : "-translate-y-80 opacity-50"
       )}
     >
-      <div className="relative">
+      <div className="relative w-full h-32">
         <Link href={adUrl} className="p-6 flex">
           {/* ここに広告のコンテンツを配置 */}
           <Image
@@ -133,10 +140,18 @@ export function AnnoyingOverlayAd({ adUrl }: { adUrl: string }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsOpen(true);
+      document.body.style.overflow = "hidden"; // 背景のスクロールを無効化
       setCountdown(5); // 広告が表示されたらカウントダウンをリセット
     }, 20000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleClose = () => {
+    if (countdown === 0) {
+      setIsOpen(false);
+      document.body.style.overflow = "auto"; // 背景のスクロールを再度有効化
+    }
+  };
 
   if (!isOpen) {
     return null;
@@ -162,7 +177,7 @@ export function AnnoyingOverlayAd({ adUrl }: { adUrl: string }) {
         </Link>
         {/* 閉じるボタン (カウントダウン付き) */}
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
           disabled={countdown > 0}
           className="absolute -top-3 -right-3 rounded-full bg-white p-1 text-2xl shadow-lg transition-all hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
           aria-label="広告を閉じる"

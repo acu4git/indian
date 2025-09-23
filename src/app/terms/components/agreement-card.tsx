@@ -96,7 +96,7 @@ export default function AgreementCard() {
                 !isNotHumanChecked || !isAgreementChecked,
             })}
           >
-            同意する
+            同意します
           </button>
           <button
             // TODO: storeId, orderIdを動的に変更する
