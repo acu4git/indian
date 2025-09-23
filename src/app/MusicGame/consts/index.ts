@@ -3,7 +3,7 @@
 // --------------------------------
 export const LANE_WIDTH = 59;
 export const BLOCK_HEIGHT = 17;
-export const PLAY_TIME_SECONDS = 30; // プレイ時間（秒）
+export const PLAY_TIME_SECONDS = 15; // プレイ時間（秒）
 export const NOTES_PER_SECOND = 3; // 1秒あたりのノーツ数
 export const TOTAL_NOTES = PLAY_TIME_SECONDS * NOTES_PER_SECOND;
 export const NOTE_OFFSET_TIME_MS = 300; // ノーツ表示のオフセット（ミリ秒）
