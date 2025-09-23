@@ -35,8 +35,8 @@ function BackgroundPlane() {
   if (!texture) return null;
 
   return (
-    <mesh position={[0, 0, -50]}>
-      <planeGeometry args={[100, 50]} />
+    <mesh position={[10, 0, -50]}>
+      <planeGeometry args={[50, 50]} />
       <meshBasicMaterial map={texture} />
     </mesh>
   );
