@@ -36,6 +36,6 @@ npm run dev
 
 プレイは[こちら](https://indian-lake.vercel.app/)
 
-https://github.com/user-attachments/assets/e63ff52b-03fb-42bc-923b-34a127bfa5c3" 
+https://github.com/user-attachments/assets/e63ff52b-03fb-42bc-923b-34a127bfa5c3
 
 
