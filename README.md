@@ -1,6 +1,6 @@
 # かき氷注文UI (Shaved Ice Ordering UI)
 
-[技育祭](https://talent.supporterz.jp/events/aad46765-fbd6-4d98-bb90-e18e00112998/)に向けて、最凶のかき氷注文UIを実装したフロントエンド(React/Next.js)のリポジトリです。  
+[技育祭](https://talent.supporterz.jp/events/aad46765-fbd6-4d98-bb90-e18e00112998/)に向けて、最凶のかき氷注文UIを実装したスマホアプリのフロントエンド(React/Next.js)のリポジトリです。  
 バックエンド(Go)のリポジトリは[こちら](https://github.com/acu4git/indian-backend)
 
 ### 「最凶」とは？
@@ -36,7 +36,6 @@ npm run dev
 
 プレイは[こちら](https://indian-lake.vercel.app/)
 
-<video src="https://github.com/user-attachments/assets/e63ff52b-03fb-42bc-923b-34a127bfa5c3" 
-       height="480" width="270" controls>
-</video>
+https://github.com/user-attachments/assets/e63ff52b-03fb-42bc-923b-34a127bfa5c3" 
+
 
