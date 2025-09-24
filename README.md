@@ -32,6 +32,8 @@ npm install
 npm run dev
 ```
 
+---
+
 ## プレイ動画
 
 プレイは[こちら](https://indian-lake.vercel.app/)
