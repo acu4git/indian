@@ -1,7 +1,10 @@
-# かき氷注文UI (indian UI)
+# かき氷注文UI (Shaved Ice Ordering UI)
 
-React/Next.js 製の最凶のUIかき氷注文UIです。
-(made by シャリカレー)
+[技育祭](https://talent.supporterz.jp/events/aad46765-fbd6-4d98-bb90-e18e00112998/)に向けて、最凶のかき氷注文UIを実装したフロントエンド(React/Next.js)のリポジトリです。
+バックエンド(Go)のリポジトリは[こちら](https://github.com/acu4git/indian-backend)
+
+### 最凶とは？
+あえて視認性・操作性の悪いデザインにすることで、注文までにかかる時間を稼ぎ、かき氷を作る店側の負荷分散を図るという目的で開発しています。
 
 ---
 
@@ -29,3 +32,8 @@ npm install
 npm run dev
 ```
 
+## プレイ動画
+
+プレイは[こちら](https://indian-lake.vercel.app/)
+
+https://github.com/user-attachments/assets/3724c019-2a5a-4b72-b9ff-fb3ffb8f5158
